@@ -35,6 +35,7 @@ const apiOptions = {
   apiKey: "AIzaSyA3ACCckrmeyEyl2ZUw72B3dU3UGlCuQCE",
   version: "beta",
   map_ids: ["56e39613eced90d4"],
+  libraries: ["visualization"],
 };
 
 const mapOptions = {
@@ -44,12 +45,13 @@ const mapOptions = {
   center: { lat: 34.074949, lng: -118.441318 },
   mapId: "56e39613eced90d4",
   mapTypeControlOptions: {},
- 
 };
 
 function capitalizeFirstLetter(string) {
   return string.charAt(0).toUpperCase() + string.slice(1);
 }
+
+var map, heatmap;
 
 async function initMap() {
   const mapDiv = document.getElementById("map");
@@ -69,8 +71,8 @@ async function initMap() {
     }
   };
 
-  var map = new google.maps.Map(mapDiv, mapOptions);
-  await addMarkers(map, adjustMap);
+  map = new google.maps.Map(mapDiv, mapOptions);
+  await addMarkers(adjustMap);
 
   var directionsService = new google.maps.DirectionsService();
   var directionsRenderer = new google.maps.DirectionsRenderer({
@@ -80,17 +82,71 @@ async function initMap() {
 
   var element = document.getElementById("searchButton");
   element.onclick = function (event) {
-    searchDirections(map, directionsService, directionsRenderer, adjustMap);
+    searchDirections(directionsService, directionsRenderer, adjustMap);
   };
-  
-  google.maps.event.addListenerOnce(map, 'idle', function() {
-    $('.gm-style').css("opacity", 0.65)
+
+  heatmap = new google.maps.visualization.HeatmapLayer({
+    data: getPoints(),
+    map: map,
   });
+  document
+    .getElementById("toggle-heatmap")
+    .addEventListener("click", toggleHeatmap);
+  document
+    .getElementById("change-gradient")
+    .addEventListener("click", changeGradient);
+  document
+    .getElementById("change-opacity")
+    .addEventListener("click", changeOpacity);
+  document
+    .getElementById("change-radius")
+    .addEventListener("click", changeRadius);
+
   return map;
 }
 
+function toggleHeatmap() {
+  heatmap.setMap(heatmap.getMap() ? null : map);
+}
+
+function changeGradient() {
+  const gradient = [
+    "rgba(0, 255, 255, 0)",
+    "rgba(0, 255, 255, 1)",
+    "rgba(0, 191, 255, 1)",
+    "rgba(0, 127, 255, 1)",
+    "rgba(0, 63, 255, 1)",
+    "rgba(0, 0, 255, 1)",
+    "rgba(0, 0, 223, 1)",
+    "rgba(0, 0, 191, 1)",
+    "rgba(0, 0, 159, 1)",
+    "rgba(0, 0, 127, 1)",
+    "rgba(63, 0, 91, 1)",
+    "rgba(127, 0, 63, 1)",
+    "rgba(191, 0, 31, 1)",
+    "rgba(255, 0, 0, 1)",
+  ];
+
+  heatmap.set("gradient", heatmap.get("gradient") ? null : gradient);
+}
+
+function changeRadius() {
+  heatmap.set("radius", heatmap.get("radius") ? null : 100);
+}
+
+function changeOpacity() {
+  heatmap.set("opacity", heatmap.get("opacity") ? null : 0.2);
+}
+
+function getPoints() {
+  var points = [];
+  querySnapshot.forEach((doc) => {
+    points.push(new google.maps.LatLng(doc.data().latitude, doc.data().longitude))
+  });
+  return points;
+}
+
 function searchDirections(
-  map,
   directionsService,
   directionsRenderer,
   adjustMap
@@ -124,7 +180,7 @@ function searchDirections(
   }
 }
 
-async function addMarkers(map, adjustMap) {
+async function addMarkers(adjustMap) {
   querySnapshot.forEach((doc) => {
     const contentString =
       '<div id="content">' +
@@ -242,7 +298,7 @@ function initWebglOverlayView(map) {
         // rotate the map 360 degrees
         if (mapOptions.tilt < 67.5) {
           mapOptions.tilt += 0.5;
-        } else if (mapOptions.heading <= 360) {
+        } else if (mapOptions.heading <= 5) {
           mapOptions.heading += 0.2;
           mapOptions.zoom -= 0.0005;
         } else {
