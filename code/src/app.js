@@ -77,7 +77,7 @@ async function initMap() {
   });
 
   infoWindow.addListener("closeclick", () => {
-    adjustMap("tilt", 60);
+    adjustMap("tilt", 67.5);
   });
 
   const marker1 = new google.maps.Marker({
@@ -108,7 +108,7 @@ function initWebglOverlayView(map) {
     const ambientLight = new THREE.AmbientLight(0xffffff, 0.75); // soft white light
     scene.add(ambientLight);
     const directionalLight = new THREE.DirectionalLight(0xffffff, 0.25);
-    directionalLight.position.set(0.5, -1, 0.5);
+    directionalLight.position.set(0, 10, 50);
     scene.add(directionalLight);
 
     // load the model
@@ -145,6 +145,7 @@ function initWebglOverlayView(map) {
           mapOptions.tilt += 0.5;
         } else if (mapOptions.heading <= 360) {
           mapOptions.heading += 0.2;
+          mapOptions.zoom -= 0.0005;
         } else {
           renderer.setAnimationLoop(null);
         }
