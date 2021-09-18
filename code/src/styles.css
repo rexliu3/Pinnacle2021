@@ -229,7 +229,7 @@ body {
 
 .dashtext {
   width: 0px;
-  transition: 1s;
+  transition: 1s;   
   padding-left: 10px;
   cursor: default;
   color: transparent;
@@ -290,7 +290,7 @@ body {
   height: 2px;
   background: rgb(163, 163, 163);
   transition: 1s;
-  border-radius: 2px;
+  border-radius: 1px;
 }
 
 .active .border {
@@ -320,7 +320,7 @@ body {
 
 #logotext {
   cursor: default;
-  font-size: 32px;
+  font-size: 28px;
 }
 
 #searchButton {
