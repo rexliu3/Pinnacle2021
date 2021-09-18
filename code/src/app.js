@@ -44,6 +44,14 @@ const mapOptions = {
   mapTypeControl: false,
 };
 
+var querySnapshot;
+var map, heatmap;
+var gotData = false;
+var createdHeatmap = false;
+var showingMarkers = false;
+var markers = [];
+
+// <--- Helper Functions
 function capitalizeFirstLetter(string) {
   return string.charAt(0).toUpperCase() + string.slice(1);
 }
@@ -60,12 +68,13 @@ const adjustMap = function (mode, amount) {
       break;
   }
 };
+// End of Helper Functions --->
 
 // <--- Listeners
 function toggleHeatmap() {
   if (createdHeatmap) {
     if (showingHeatmap) {
-      heatmap.setMap(null)
+      heatmap.setMap(null);
     } else {
       heatmap.setMap(heatmap.getMap() ? null : map);
     }
@@ -102,19 +111,22 @@ function changeOpacity() {
   heatmap.set("opacity", heatmap.get("opacity") ? null : 0.2);
 }
 function toggleMarkers() {
-  addMarkers();
+  if (gotData === true) {
+    if (showingMarkers) {
+      hideMarkers();
+    } else {
+      showMarkers();
+    }
+    showingMarkers = !showingMarkers;
+  } else {
+    addMarkers();
+    showingMarkers = true;
+  }
 }
 function setTilt() {
   adjustMap("tilt", 67.5);
 }
-// --->
-
-var querySnapshot;
-var map, heatmap;
-var gotData = false;
-var createdHeatmap = false;
-var showingHeatmap = false;
-var markers = [];
+// End of Listeners --->
 
 async function initMap() {
   const mapDiv = document.getElementById("map");
@@ -140,23 +152,12 @@ async function initMap() {
   document
     .getElementById("toggle-heatmap")
     .addEventListener("click", toggleHeatmap);
-    document
-    .getElementById("tilt")
-    .addEventListener("click", setTilt);
+  document.getElementById("tilt").addEventListener("click", setTilt);
 
   return map;
 }
 
-function getPoints() {
-  var points = [];
-  querySnapshot.forEach((doc) => {
-    points.push(
-      new google.maps.LatLng(doc.data().latitude, doc.data().longitude)
-    );
-  });
-  return points;
-}
-
+// Search fastest path directions 
 function searchDirections(directionsService, directionsRenderer) {
   var start = document.getElementById("origin").value; // "1580 Point W Blvd, Coppell, TX";
   var end = document.getElementById("destination").value; // "8450 N Belt Line Rd, Irving, TX";
@@ -196,6 +197,19 @@ function searchDirections(directionsService, directionsRenderer) {
   }
 }
 
+// <--- Heatmap and Markers Functions
+
+// Get data points for heatmap creation
+function getPoints() {
+  var points = [];
+  querySnapshot.forEach((doc) => {
+    points.push(
+      new google.maps.LatLng(doc.data().latitude, doc.data().longitude)
+    );
+  });
+  return points;
+}
+
 async function addHeatMap() {
   if (gotData === true) {
     heatmap = new google.maps.visualization.HeatmapLayer({
@@ -213,7 +227,7 @@ async function addHeatMap() {
       .addEventListener("click", changeRadius);
     adjustMap("tilt", 67.5);
   } else {
-    alert ("This is a warning message!");
+    alert("This is a warning message!");
   }
   createdHeatmap = true;
 }
@@ -259,10 +273,11 @@ async function addMarkers() {
       });
     });
 
-    markers.push(marker)
+    markers.push(marker);
   });
   gotData = true;
 }
+// ---> End of Heatmap and Markers Functions
 
 // Sets the map on all markers in the array.
 function setMapOnAll(map) {
