@@ -18,13 +18,13 @@
 <html>
   <head>
     <meta http-equiv="content-type" content="text/html; charset=utf-8" />
-    <title>Google Maps Platform WebGL Codelab</title> 
+    <title>SafeWalk</title> 
     <link rel="stylesheet" type="text/css" href="./styles.css" />   
     <link
       rel="stylesheet"
       href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css"
     />
-    <script src="./app.js" defer></script>    
+    <script src="./app.js" defer></script>
   </head>
   <body>
     <div id="map"></div>
@@ -34,9 +34,9 @@
       <div id="searchBox">
         <i class="fa fa-location-arrow" aria-hidden="true" id="locationIcon"></i>
         <div id="search">
-          <input type="text" class="origin" placeholder="Origin" />
-          <input type="text" class="destination" placeholder="Destination">
-          <i class="fa fa-search" aria-hidden="true" id="searchIcon"></i>
+          <input type="text" id="origin" class="origin" placeholder="Origin" />
+          <input type="text" id="destination" class="destination" placeholder="Destination">
+          <button id="searchButton" style="background: #f0f3ff;border:none"><i class="fa fa-search" aria-hidden="true" id="searchIcon"></i></button>
         </div>
       </div>
     </div>
