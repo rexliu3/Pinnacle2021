@@ -45,7 +45,12 @@ body {
   padding-top: 20px;
   position: absolute;
   top: 20px;
-  left: 12px;
+  left: 106px;
+  transition: 1s;
+}
+
+.adjust .hero {
+  left: 316px;
 }
 
 #searchBox {
@@ -61,6 +66,7 @@ body {
   height: 40px;
   gap: 30px;
 }
+
 
 #locationIcon {
   width: fit-content;
@@ -134,4 +140,53 @@ input {
   position: absolute;
   top: 10px;
   z-index: 5;
+}
+
+.dashboard {
+  position: absolute;
+  left: 0;
+  top: 0;
+  width: 90px;
+  height: 100vh;
+  box-shadow: 0 0 5px 0 rgba(0, 0, 0, .2); 
+  /*background-color: rgba(255, 255, 255, .15);
+  backdrop-filter: blur(5px);*/
+  background: #f0f3ff;;
+  z-index: 99;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding-top: 66px;
+  transition: 1s;
+}
+
+.active .dashboard {
+  width: 300px;
+}
+
+#hamburger {
+  font-size: 40px;
+  cursor: pointer;
+  transition: 1s;
+}
+
+.active #hamburger {
+  -webkit-transform: rotate(45deg);
+  -moz-transform: rotate(45deg);
+  -ms-transform: rotate(45deg);
+  -o-transform: rotate(45deg);
+  transform: rotate(45deg);
+}
+
+.buns {
+  width: 90px;
+  height: fit-content;
+  display: flex;
+  justify-content: flex-end;
+  transition: 1s;
+  padding-right: 54px;
+}
+
+.active .buns {
+  width: 300px;
 }

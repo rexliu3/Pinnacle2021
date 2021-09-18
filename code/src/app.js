@@ -44,7 +44,7 @@ const mapOptions = {
   zoom: 18,
   center: { lat: 34.074949, lng: -118.441318 },
   mapId: "56e39613eced90d4",
-  mapTypeControlOptions: {},
+  mapTypeControl: false,
 };
 
 function capitalizeFirstLetter(string) {
@@ -342,13 +342,10 @@ function initWebglOverlayView(map) {
 
 const searchBox = document.getElementById("searchBox"),
   locationIcon = document.getElementById("locationIcon"),
-  searchIcon = document.getElementById("searchIcon");
-
-/*searchBox.onclick = function () {
-  if (!searchBox.classList.contains('active')) {
-    searchBox.classList.toggle('active');
-  }
-};*/
+  searchIcon = document.getElementById("searchIcon"),
+  hamburgerIcon = document.getElementById("hamburger"),
+  dashContainer = document.getElementById("dashContainer"),
+  searchContainer = document.getElementById("searchContainer");
 
 locationIcon.onclick = function () {
   searchBox.classList.toggle("active");
@@ -359,3 +356,8 @@ searchIcon.onclick = function () {
     searchBox.classList.toggle("active");
   }
 };
+
+hamburgerIcon.onclick = function () {
+  dashContainer.classList.toggle("active");
+  searchContainer.classList.toggle("adjust")
+}
