@@ -11,4 +11,4 @@ const radius = 100; // this is miles
 crimeHotspot.getCrimes(loc, radius).then((crimes) => {
   // add to firestore here
   console.log(crimes);
-});
+}); 
