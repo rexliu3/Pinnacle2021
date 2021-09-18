@@ -63,7 +63,11 @@ const adjustMap = function (mode, amount) {
 
 // <--- Listeners
 function toggleHeatmap() {
-  heatmap.setMap(heatmap.getMap() ? null : map);
+  if (createdHeatmap) {
+    heatmap.setMap(heatmap.getMap() ? null : map);
+  } else {
+    addHeatMap();
+  }
 }
 function changeGradient() {
   const gradient = [
@@ -96,6 +100,7 @@ function toggleMarkers() {
 }
 // --->
 
+var querySnapshot;
 var map, heatmap;
 var gotData = false;
 var createdHeatmap = false;
@@ -121,6 +126,9 @@ async function initMap() {
   document
     .getElementById("toggle-markers")
     .addEventListener("click", toggleMarkers);
+  document
+    .getElementById("toggle-heatmap")
+    .addEventListener("click", toggleHeatmap);
 
   return map;
 }
@@ -181,9 +189,6 @@ async function addHeatMap() {
       map: map,
     });
     document
-      .getElementById("toggle-heatmap")
-      .addEventListener("click", toggleHeatmap);
-    document
       .getElementById("change-gradient")
       .addEventListener("click", changeGradient);
     document
@@ -194,13 +199,13 @@ async function addHeatMap() {
       .addEventListener("click", changeRadius);
     adjustMap("tilt", 67.5);
   } else {
-    
+    alert ("This is a warning message!");
   }
 }
 
 async function addMarkers() {
   const db = getFirestore();
-  const querySnapshot = await getDocs(collection(db, "fbi"));
+  querySnapshot = await getDocs(collection(db, "fbi"));
 
   querySnapshot.forEach((doc) => {
     const contentString =
