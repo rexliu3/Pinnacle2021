@@ -65,6 +65,19 @@ body {
     -6px -6px 10px -1px rgba(255, 255, 255, 0.7);
   height: 40px;
   gap: 30px;
+  transition: 0.5s;
+}
+
+#searchBox:hover {
+  background: #babbc4;
+}
+
+.grey #searchBox {
+  background: #f0f3ff;
+}
+
+.grey #searchBox:hover {
+  background: #f0f3ff;
 }
 
 
@@ -169,6 +182,8 @@ body {
   font-size: 40px;
   cursor: pointer;
   transition: 1s;
+  position: relative;
+  right: 28px;
 }
 
 .active #hamburger {
@@ -177,21 +192,21 @@ body {
   -ms-transform: rotate(-90deg);
   -o-transform: rotate(-90deg);
   transform: rotate(-90deg);
+  position: relative;
+  right: 56px;
 }
 
-.buns {
+/*.buns {
   width: 90px;
   height: fit-content;
   display: flex;
   justify-content: flex-end;
   transition: 1s; 
-  padding: 20px;
-  padding-right: 74.5px;
 }
 
 .active .buns {
   width: 300px;
-}
+}*/
 
 .dashbar {
   width: 0px;
@@ -249,11 +264,14 @@ body {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  border-radius: 5px;
 }
 
-.dashbutton:active {
+.active .dashbutton:hover {
   background: #0000001e;
+}
+
+.active .dashbutton:active {
+  background: #0000003f;
 }
 
 .active .dashbutton    {
@@ -278,4 +296,42 @@ body {
 .active .border {
   width: 255px;
   background: rgb(97, 97, 97);
+}
+
+.logo {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: 90px;
+  transition: 1s;
+}
+
+.logo:hover {
+  background: #0000001e;
+}
+
+.active .logo {
+  width: 300px
+}
+
+.active .logo:hover{
+  background: #f0f3ff;
+}
+
+#logotext {
+  cursor: default;
+  font-size: 32px;
+}
+
+#searchButton {
+  background-color: Transparent;
+  background-repeat:no-repeat;
+  border: none;
+  cursor:pointer;
+  overflow: hidden;
+  outline:none;
+}
+
+.space {
+  height: 30px;
 }
