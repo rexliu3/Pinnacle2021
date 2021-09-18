@@ -56,17 +56,17 @@ async function initMap() {
     map,
   });
   directionsRenderer.setMap(map);
-  directionsRenderer.setPanel(document.getElementById('directionsPanel'));
+  directionsRenderer.setPanel(document.getElementById("directionsPanel"));
 
-  var start = "1580 Point W Blvd, Coppell, TX";// document.getElementById('start').value;
-  var end = "8450 N Belt Line Rd, Irving, TX" // document.getElementById('end').value;
+  var start = "1580 Point W Blvd, Coppell, TX"; // document.getElementById('start').value;
+  var end = "8450 N Belt Line Rd, Irving, TX"; // document.getElementById('end').value;
   var request = {
-    origin:start,
-    destination:end,
-    travelMode: 'WALKING'
+    origin: start,
+    destination: end,
+    travelMode: "WALKING",
   };
-  directionsService.route(request, function(response, status) {
-    if (status == 'OK') {
+  directionsService.route(request, function (response, status) {
+    if (status == "OK") {
       directionsRenderer.setDirections(response);
     }
   });
@@ -77,13 +77,13 @@ async function initMap() {
       computeTotalDistance(directions);
     }
   });
-  displayRoute(
-    start,
-    end,
-    directionsService,
-    directionsRenderer
-  );
+  displayRoute(start, end, directionsService, directionsRenderer);
 
+  addMarkers(map, adjustMap);
+  return map;
+}
+
+function addMarkers(map, adjustMap) {
   const contentString =
     '<div id="content">' +
     '<div id="siteNotice">' +
@@ -127,8 +127,6 @@ async function initMap() {
       shouldFocus: false,
     });
   });
-
-  return map;
 }
 
 function displayRoute(origin, destination, service, display) {
@@ -241,9 +239,9 @@ function initWebglOverlayView(map) {
   initWebglOverlayView(map);
 })();
 
-const searchBox = document.getElementById('searchBox'),
-  locationIcon = document.getElementById('locationIcon');
+const searchBox = document.getElementById("searchBox"),
+  locationIcon = document.getElementById("locationIcon");
 
 locationIcon.onclick = function () {
-  searchBox.classList.toggle('active');
+  searchBox.classList.toggle("active");
 };
