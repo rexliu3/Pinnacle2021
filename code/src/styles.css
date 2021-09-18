@@ -1,7 +1,27 @@
 @import url('https://fonts.googleapis.com/css2?family=Varela+Round&display=swap');
 
 html,
-body,
+body {
+  height: 100%;
+  margin: 0;
+  padding: 0;
+}
+
+#container {
+  height: 100%;
+  display: flex;
+}
+
+#sidebar {
+  flex-basis: 15rem;
+  flex-grow: 1;
+  padding: 1rem;
+  max-width: 30rem;
+  height: 100%;
+  box-sizing: border-box;
+  overflow: auto;
+}
+
 #map {
     height: 100%;
     margin: 0;

@@ -30,7 +30,8 @@ const CONFIG = {
   plugins: [
     // Read google maps token from environment variable
     new webpack.EnvironmentPlugin(['NODE_ENV', 'DEBUG'])
-  ]
+  ],
+  experiments: { topLevelAwait: true}
 };
 
 // This line enables bundling against src in this repo rather than installed module
