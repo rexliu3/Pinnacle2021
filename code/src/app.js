@@ -19,27 +19,24 @@ import { initializeApp } from "firebase/app";
 import { getFirestore, collection, getDocs } from "firebase/firestore";
 
 const firebaseApp = initializeApp({
-  apiKey: "AIzaSyAIx4fWlxvkL6AF_Vc3QcMS60LVxXOaOOg",
-  authDomain: "pinnacle2021-b6e50.firebaseapp.com",
-  projectId: "pinnacle2021-b6e50",
-  storageBucket: "pinnacle2021-b6e50.appspot.com",
-  messagingSenderId: "12249211641",
-  appId: "1:12249211641:web:429ccd4271bd42b3e77828",
-  measurementId: "G-8F4Z9J2M4R",
+  apiKey: "AIzaSyCUvjvEYUfKivJPJ8xS6inRXlHW4pW0HfA",
+  authDomain: "pinnacle2021v2.firebaseapp.com",
+  projectId: "pinnacle2021v2",
+  storageBucket: "pinnacle2021v2.appspot.com",
+  messagingSenderId: "347442946979",
+  appId: "1:347442946979:web:a12be8ec3003ec7cb9f016",
+  measurementId: "G-9FL3CCBLF5",
 });
-
-const db = getFirestore();
-const querySnapshot = await getDocs(collection(db, "fbi"));
 
 const apiOptions = {
   apiKey: "AIzaSyA3ACCckrmeyEyl2ZUw72B3dU3UGlCuQCE",
   version: "beta",
   map_ids: ["56e39613eced90d4"],
-  libraries: ["visualization"],
+  libraries: ["visualization", "places"],
 };
 
 const mapOptions = {
-  tilt: 0,
+  tilt: 40,
   heading: 0,
   zoom: 18,
   center: { lat: 34.074949, lng: -118.441318 },
@@ -47,69 +44,34 @@ const mapOptions = {
   mapTypeControl: false,
 };
 
+var querySnapshot;
+var map, heatmap;
+var gotData = false;
+var createdHeatmap = false;
+var showingMarkers = false;
+var markers = [];
+
+// <--- Helper Functions
 function capitalizeFirstLetter(string) {
   return string.charAt(0).toUpperCase() + string.slice(1);
 }
 
-var map, heatmap;
+const adjustMap = function (mode, amount) {
+  switch (mode) {
+    case "tilt":
+      map.setTilt(map.getTilt() + amount);
+      break;
+    case "rotate":
+      map.setHeading(map.getHeading() + amount);
+      break;
+    default:
+      break;
+  }
+};
+// End of Helper Functions --->
 
-async function initMap() {
-  const mapDiv = document.getElementById("map");
-  const apiLoader = new Loader(apiOptions);
-  await apiLoader.load();
 
-  const adjustMap = function (mode, amount) {
-    switch (mode) {
-      case "tilt":
-        map.setTilt(map.getTilt() + amount);
-        break;
-      case "rotate":
-        map.setHeading(map.getHeading() + amount);
-        break;
-      default:
-        break;
-    }
-  };
-
-  map = new google.maps.Map(mapDiv, mapOptions);
-  await addMarkers(adjustMap);
-
-  var directionsService = new google.maps.DirectionsService();
-  var directionsRenderer = new google.maps.DirectionsRenderer({
-    draggable: true,
-    map,
-  });
-
-  var element = document.getElementById("searchButton");
-  element.onclick = function (event) {
-    searchDirections(directionsService, directionsRenderer, adjustMap);
-  };
-
-  heatmap = new google.maps.visualization.HeatmapLayer({
-    data: getPoints(),
-    map: map,
-  });
-  document
-    .getElementById("toggle-heatmap")
-    .addEventListener("click", toggleHeatmap);
-  document
-    .getElementById("change-gradient")
-    .addEventListener("click", changeGradient);
-  document
-    .getElementById("change-opacity")
-    .addEventListener("click", changeOpacity);
-  document
-    .getElementById("change-radius")
-    .addEventListener("click", changeRadius);
-
-  return map;
-}
-
-function toggleHeatmap() {
-  heatmap.setMap(heatmap.getMap() ? null : map);
-}
-
-function changeGradient() {
+function setGradient() {
   const gradient = [
     "rgba(0, 255, 255, 0)",
     "rgba(0, 255, 255, 1)",
@@ -127,32 +89,163 @@ function changeGradient() {
     "rgba(255, 0, 0, 1)",
   ];
 
-  heatmap.set("gradient", heatmap.get("gradient") ? null : gradient);
+  heatmap.set("gradient", gradient);
+}
+function setRadius(radius) {
+  heatmap.set("radius", radius);
+}
+function setOpacity(opacity) {
+  heatmap.set("opacity",opacity);
 }
 
-function changeRadius() {
-  heatmap.set("radius", heatmap.get("radius") ? null : 150);
+// <--- Listeners
+function setTilt() {
+  adjustMap("tilt", 67.5);
 }
+// End of Listeners --->
 
-function changeOpacity() {
-  heatmap.set("opacity", heatmap.get("opacity") ? null : 0.2);
-}
+async function initMap() {
+  const mapDiv = document.getElementById("map");
+  const apiLoader = new Loader(apiOptions);
+  await apiLoader.load();
 
-function getPoints() {
-  var points = [];
-  querySnapshot.forEach((doc) => {
-    points.push(new google.maps.LatLng(doc.data().latitude, doc.data().longitude))
+  map = new google.maps.Map(mapDiv, mapOptions);
+
+  var directionsService = new google.maps.DirectionsService();
+  var directionsRenderer = new google.maps.DirectionsRenderer({
+    draggable: true,
+    map,
   });
-  return points;
+
+  var element = document.getElementById("searchButton");
+  var service = new google.maps.places.PlacesService(map);
+  element.onclick = function (event) {
+    searchDirections(directionsService, directionsRenderer, service);
+  };
+
+  document
+  .getElementById("toggle-markers").addEventListener('change', (event) => {
+    if (gotData === true) {
+      if (showingMarkers) {
+        hideMarkers();
+      } else {
+        showMarkers();
+      }
+      showingMarkers = !showingMarkers;
+    } else {
+      addMarkers();
+      showingMarkers = true;
+    }
+  })
+ 
+  document
+  .getElementById("toggle-heatmap").addEventListener('change', (event) => {
+    if (createdHeatmap) {
+      if (showingHeatmap) {
+        heatmap.setMap(null);
+      } else {
+        heatmap.setMap(heatmap.getMap() ? null : map);
+      }
+      showingHeatmap = !showingHeatmap;
+    } else {
+      addHeatMap();
+      showingHeatmap = true;
+    }
+  })
+  document.getElementById("tilt").addEventListener("click", setTilt);
+
+  const inputOrigin = document.getElementById("origin");
+  const searchBoxOrigin = new google.maps.places.SearchBox(inputOrigin);
+  map.addListener("bounds_changed", () => {
+    searchBoxOrigin.setBounds(map.getBounds());
+  });
+  // Listen for the event fired when the user selects a prediction and retrieve
+  // more details for that place.
+  searchBoxOrigin.addListener("places_changed", () => {
+    const places = searchBoxOrigin.getPlaces();
+
+    if (places.length == 0) {
+      return;
+    }
+
+    // For each place, get the icon, name and location.
+    const bounds = new google.maps.LatLngBounds();
+
+    places.forEach((place) => {
+      if (!place.geometry || !place.geometry.location) {
+        console.log("Returned place contains no geometry");
+        return;
+      }
+
+      const icon = {
+        url: place.icon,
+        size: new google.maps.Size(71, 71),
+        origin: new google.maps.Point(0, 0),
+        anchor: new google.maps.Point(17, 34),
+        scaledSize: new google.maps.Size(25, 25),
+      };
+
+      // Create a marker for each place.
+      markers.push(
+        new google.maps.Marker({
+          map,
+          icon,
+          title: place.name,
+          position: place.geometry.location,
+        })
+      );
+      if (place.geometry.viewport) {
+        // Only geocodes have viewport.
+        bounds.union(place.geometry.viewport);
+      } else {
+        bounds.extend(place.geometry.location);
+      }
+    });
+    map.fitBounds(bounds);
+  });
+
+  const inputDestination = document.getElementById("destination");
+  const searchBoxDestination = new google.maps.places.SearchBox(inputDestination);
+  map.addListener("bounds_changed", () => {
+    searchBoxDestination.setBounds(map.getBounds());
+  });
+  return map;
 }
 
-function searchDirections(
-  directionsService,
-  directionsRenderer,
-  adjustMap
-) {
+// Search fastest path directions 
+function searchDirections(directionsService, directionsRenderer, service) {
   var start = document.getElementById("origin").value; // "1580 Point W Blvd, Coppell, TX";
   var end = document.getElementById("destination").value; // "8450 N Belt Line Rd, Irving, TX";
+
+  if (isNaN(start.charAt(0))) {
+    // Place Name
+    var request = {
+      query: start,
+      fields: ["name", "geometry"],
+    };
+    service.findPlaceFromQuery(request, (results, status) => {
+      if (status === google.maps.places.PlacesServiceStatus.OK && results) {
+        for (let i = 0; i < results.length; i++) {
+          createMarker(results[i]);
+        }
+        start = results[0].geometry.location
+      }
+    });
+
+    request = {
+      query: end,
+      fields: ["name", "geometry"],
+    };
+  
+    service.findPlaceFromQuery(request, (results, status) => {
+      if (status === google.maps.places.PlacesServiceStatus.OK && results) {
+        for (let i = 0; i < results.length; i++) {
+          createMarker(results[i]);
+        }
+        end = results[0].geometry.location
+      }
+    });
+  }
 
   if (start !== "" && end !== "") {
     directionsRenderer.setMap(map);
@@ -166,6 +259,7 @@ function searchDirections(
     directionsService.route(request, function (response, status) {
       if (status == "OK") {
         directionsRenderer.setDirections(response);
+        console.log(response);
       }
     });
 
@@ -177,20 +271,50 @@ function searchDirections(
     });
     displayRoute(start, end, directionsService, directionsRenderer);
     adjustMap("tilt", 67.5);
-    
+
     var geocoder = new google.maps.Geocoder();
-    geocoder.geocode( { 'address': start}, function(results, status) {
+    geocoder.geocode({ address: start }, function (results, status) {
       if (status == google.maps.GeocoderStatus.OK) {
         var latitude = results[0].geometry.location.lat();
         var longitude = results[0].geometry.location.lng();
-        map.setCenter({lat: latitude, lng: longitude})        } 
+        map.setCenter({ lat: latitude, lng: longitude });
+      }
     });
-
-    
   }
 }
 
-async function addMarkers(adjustMap) {
+// <--- Heatmap and Markers Functions
+// Get data points for heatmap creation
+function getPoints() {
+  var points = [];
+  querySnapshot.forEach((doc) => {
+    points.push(
+      new google.maps.LatLng(doc.data().latitude, doc.data().longitude)
+    );
+  });
+  return points;
+}
+
+async function addHeatMap() {
+  if (gotData === true) {
+    heatmap = new google.maps.visualization.HeatmapLayer({
+      data: getPoints(),
+      map: map,
+    });
+    setGradient()
+    setRadius(50)
+    setOpacity(0.8)
+    adjustMap("tilt", 67.5);
+  } else {
+    alert("This is a warning message!");
+  }
+  createdHeatmap = true;
+}
+
+async function addMarkers() {
+  const db = getFirestore();
+  querySnapshot = await getDocs(collection(db, "fbi"));
+
   querySnapshot.forEach((doc) => {
     const contentString =
       '<div id="content">' +
@@ -227,7 +351,28 @@ async function addMarkers(adjustMap) {
         shouldFocus: false,
       });
     });
+
+    markers.push(marker);
   });
+  gotData = true;
+}
+// ---> End of Heatmap and Markers Functions
+
+// Sets the map on all markers in the array.
+function setMapOnAll(map) {
+  for (let i = 0; i < markers.length; i++) {
+    markers[i].setMap(map);
+  }
+}
+
+// Removes the markers from the map, but keeps them in the array.
+function hideMarkers() {
+  setMapOnAll(null);
+}
+
+// Shows any markers currently in the array.
+function showMarkers() {
+  setMapOnAll(map);
 }
 
 function displayRoute(origin, destination, service, display) {
@@ -345,19 +490,26 @@ const searchBox = document.getElementById("searchBox"),
   searchIcon = document.getElementById("searchIcon"),
   hamburgerIcon = document.getElementById("hamburger"),
   dashContainer = document.getElementById("dashContainer"),
-  searchContainer = document.getElementById("searchContainer");
+  searchContainer = document.getElementById("searchContainer"),
+  directionsContainer = document.getElementById("directions");
 
 locationIcon.onclick = function () {
   searchBox.classList.toggle("active");
+  searchContainer.classList.toggle("grey");
+  if (directionsContainer.classList.contains("active")) {
+    directionsContainer.classList.toggle("active")
+  }
 };
 
 searchIcon.onclick = function () {
   if (!searchBox.classList.contains("active")) {
     searchBox.classList.toggle("active");
+    searchContainer.classList.toggle("grey")
   }
+  directionsContainer.classList.toggle("active");
 };
 
 hamburgerIcon.onclick = function () {
   dashContainer.classList.toggle("active");
-  searchContainer.classList.toggle("adjust")
-}
+  searchContainer.classList.toggle("adjust");
+};

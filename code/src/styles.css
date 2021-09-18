@@ -65,6 +65,19 @@ body {
     -6px -6px 10px -1px rgba(255, 255, 255, 0.7);
   height: 40px;
   gap: 30px;
+  transition: 0.5s;
+}
+
+#searchBox:hover {
+  background: #babbc4;
+}
+
+.grey #searchBox {
+  background: #f0f3ff;
+}
+
+.grey #searchBox:hover {
+  background: #f0f3ff;
 }
 
 
@@ -85,8 +98,9 @@ body {
   margin-left: 20px;
 }
 
-input {
-  font-size: 18px;
+.locate {
+  font-size: 20px;
+  font-family: quicksand;
   width: 0px;
   border: 0;
   background: transparent;
@@ -99,15 +113,15 @@ input {
   height: fit-content;  
 }
 
-.active input {
-  font-size: 18px;
+.active .locate   {
+  font-size: 20px;
   width: 380px;   
   border-bottom: 2px;
   border-color: black;
   border-style: solid;
 }
 
-.active .destination {
+.active #destination {
   margin-left: 25px;
 }
 
@@ -120,26 +134,21 @@ input {
 
 #floating-panel {
   position: absolute;
-  top: 10px;
-  left: 25%;
+  top: 58%;
+  right: 5%;
   z-index: 5;
   background-color: #fff;
-  padding: 5px;
-  border: 1px solid #999;
-  text-align: center;
+  border-radius: 2px;
+  padding: 10px;
+  border: 1px solid #ccc;
+  text-align: left;
   font-family: "Roboto", "sans-serif";
   line-height: 30px;
-  padding-left: 10px;
-}
-
-#floating-panel {
-  background-color: #fff;
-  border: 1px solid #999;
-  left: 25%;
-  padding: 5px;
-  position: absolute;
-  top: 10px;
-  z-index: 5;
+  width: 150px;
+  height: 300px;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-evenly;
 }
 
 .dashboard {
@@ -151,12 +160,12 @@ input {
   box-shadow: 0 0 5px 0 rgba(0, 0, 0, .2); 
   /*background-color: rgba(255, 255, 255, .15);
   backdrop-filter: blur(5px);*/
-  background: #f0f3ff;;
+  background: #f0f3ff;
   z-index: 99;
   display: flex;
   flex-direction: column;
   align-items: center;
-  padding-top: 66px;
+  padding-top: 47px;
   transition: 1s;
 }
 
@@ -168,25 +177,258 @@ input {
   font-size: 40px;
   cursor: pointer;
   transition: 1s;
+  position: relative;
+  right: 28px;
 }
 
 .active #hamburger {
-  -webkit-transform: rotate(45deg);
-  -moz-transform: rotate(45deg);
-  -ms-transform: rotate(45deg);
-  -o-transform: rotate(45deg);
-  transform: rotate(45deg);
+  -webkit-transform: rotate(-90deg);
+  -moz-transform: rotate(-90deg);
+  -ms-transform: rotate(-90deg);
+  -o-transform: rotate(-90deg);
+  transform: rotate(-90deg);
+  position: relative;
+  right: 56px;
 }
 
-.buns {
+/*.buns {
   width: 90px;
   height: fit-content;
   display: flex;
   justify-content: flex-end;
-  transition: 1s;
-  padding-right: 54px;
+  transition: 1s; 
 }
 
 .active .buns {
   width: 300px;
+}*/
+
+.dashbar {
+  width: 0px;
+  transition: 1s;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-direction: column;
+  font-size: 18px;
+  color: black;
+  flex-wrap: nowrap;
+}
+
+.active .dashbar {
+  width: 300px;
+  color: black;
+  padding: 0px;
+  border: none;
+}
+
+.dashtext {
+  width: 0px;
+  transition: 1s;   
+  padding-left: 10px;
+  cursor: default;
+  color: transparent;
+  padding: 20px;
+
+  font-size: 20px;
+  font-family: quicksand;
+  font-weight: 500;
+  width: 0px;
+  border: 0;
+  background: transparent;
+  outline: none;
+}
+
+.dashtext::placeholder {
+  color: black;
+}
+
+.active .dashtext {
+  width: 300px;
+  cursor: pointer;
+}
+
+.dashbutton {
+  background-color: Transparent;
+  background-repeat:no-repeat;
+  border: none;
+  cursor:pointer;
+  overflow: hidden;
+  outline:none;
+  transition: 0.25s;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.active .dashbutton:hover {
+  background: #0000001e;
+}
+
+.active .dashbutton:active {
+  background: #0000003f;
+}
+
+.active .dashbutton    {
+  width: 300px;
+} 
+
+#dash1, #dash2, #dash3 {
+  font-size: 35px;
+}
+
+.active #dash1, .active #dash2, .active #dash3 {
+}
+
+#tilt {
+  background-color: Transparent;
+  border-width: 1px;
+  height: 2.5vw;
+  width: 10vw;
+  border-radius: 2px;
+}
+
+#tilt:hover {
+    cursor: pointer;
+}
+
+.border {
+  width: 0px;
+  height: 2px;
+  background: rgb(163, 163, 163);
+  transition: 1s;
+  border-radius: 1px;
+}
+
+.active .border {
+  width: 255px;
+  background: rgb(97, 97, 97);
+}
+
+.switch-container {
+  display: flex;
+  align-content: left;
+}
+
+.switch {
+  position: relative;
+  display: inline-block;
+  width: 60px;
+  height: 34px;
+  margin-right: 10px;
+} 
+
+.switch input { 
+  opacity: 0;
+  width: 0;
+  height: 0;
+}
+
+.slider {
+  position: absolute;
+  cursor: pointer;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: #ccc;
+  -webkit-transition: .4s;
+  transition: .4s;
+}
+
+.slider:before {
+  position: absolute;
+  content: "";
+  height: 26px;
+  width: 26px;
+  left: 4px;
+  bottom: 4px;
+  background-color: white;
+  -webkit-transition: .4s;
+  transition: .4s;
+}
+
+input:checked + .slider {
+  background-color: #2196F3;
+}
+
+input:focus + .slider {
+  box-shadow: 0 0 1px #2196F3;
+}
+
+input:checked + .slider:before {
+  -webkit-transform: translateX(26px);
+  -ms-transform: translateX(26px);
+  transform: translateX(26px);
+}
+
+/* Rounded sliders */
+.slider.round {
+  border-radius: 34px;
+}
+
+.slider.round:before {
+  border-radius: 50%;
+}
+
+.filter-text {
+  float: left;
+  justify-content: left;
+}
+.logo {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: 90px;
+  transition: 1s;
+}
+
+.logo:hover {
+  background: #0000001e;
+}
+
+.active .logo {
+  width: 300px
+}
+
+.active .logo:hover{
+  background: #f0f3ff;
+}
+
+#logotext {
+  cursor: default;
+  font-size: 28px;
+}
+
+#searchButton {
+  background-color: Transparent;
+  background-repeat:no-repeat;
+  border: none;
+  cursor:pointer;
+  overflow: hidden;
+  outline:none;
+}
+
+.space {
+  height: 30px;
+}
+
+#directionsPanel {
+  position: relative;
+  bottom: 515px;
+  left: 11  6px;
+  width: 500px;
+  height: 500px;
+  transition: 1.5s;
+  padding: 30px;
+  border-radius: 30px;
+  opacity: 0;
+}
+
+.active #directionsPanel {
+  opacity: 100;
+  background:#f0f3ff;
+
+  box-shadow: 6px 6px 10px -1px rgba(0, 0, 0, 0.15),
+  -6px -6px 10px -1px rgba(255, 255, 255, 0.7);
 }
