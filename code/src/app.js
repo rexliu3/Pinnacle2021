@@ -28,6 +28,8 @@ const mapOptions = {
   zoom: 18,
   center: { lat: 32.9270316, lng: -96.9962565 },
   mapId: "56e39613eced90d4",
+  mapTypeControlOptions: {
+  },
 };
 
 async function initMap() {
@@ -79,7 +81,7 @@ async function initMap() {
   });
   displayRoute(start, end, directionsService, directionsRenderer);
 
-  addMarkers(map, adjustMap);
+  // addMarkers(map, adjustMap);
   return map;
 }
 
@@ -239,9 +241,22 @@ function initWebglOverlayView(map) {
   initWebglOverlayView(map);
 })();
 
-const searchBox = document.getElementById("searchBox"),
-  locationIcon = document.getElementById("locationIcon");
+const searchBox = document.getElementById('searchBox'),
+  locationIcon = document.getElementById('locationIcon'),
+  searchIcon = document.getElementById('searchIcon');
+
+/*searchBox.onclick = function () {
+  if (!searchBox.classList.contains('active')) {
+    searchBox.classList.toggle('active');
+  }
+};*/
 
 locationIcon.onclick = function () {
-  searchBox.classList.toggle("active");
-};
+  searchBox.classList.toggle('active');
+}
+
+searchIcon.onclick = function () {
+  if (!searchBox.classList.contains('active')) {
+    searchBox.classList.toggle('active');
+  }
+}
