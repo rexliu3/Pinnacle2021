@@ -194,8 +194,21 @@ function initWebglOverlayView(map) {
 })();
 
 const searchBox = document.getElementById('searchBox'),
-  locationIcon = document.getElementById('locationIcon');
+  locationIcon = document.getElementById('locationIcon'),
+  searchIcon = document.getElementById('searchIcon');
+
+/*searchBox.onclick = function () {
+  if (!searchBox.classList.contains('active')) {
+    searchBox.classList.toggle('active');
+  }
+};*/
 
 locationIcon.onclick = function () {
   searchBox.classList.toggle('active');
-};
+}
+
+searchIcon.onclick = function () {
+  if (!searchBox.classList.contains('active')) {
+    searchBox.classList.toggle('active');
+  }
+}
