@@ -70,21 +70,8 @@ const adjustMap = function (mode, amount) {
 };
 // End of Helper Functions --->
 
-// <--- Listeners
-function toggleHeatmap() {
-  if (createdHeatmap) {
-    if (showingHeatmap) {
-      heatmap.setMap(null);
-    } else {
-      heatmap.setMap(heatmap.getMap() ? null : map);
-    }
-    showingHeatmap = !showingHeatmap;
-  } else {
-    addHeatMap();
-    showingHeatmap = true;
-  }
-}
-function changeGradient() {
+
+function setGradient() {
   const gradient = [
     "rgba(0, 255, 255, 0)",
     "rgba(0, 255, 255, 1)",
@@ -102,27 +89,16 @@ function changeGradient() {
     "rgba(255, 0, 0, 1)",
   ];
 
-  heatmap.set("gradient", heatmap.get("gradient") ? null : gradient);
+  heatmap.set("gradient", gradient);
 }
-function changeRadius() {
-  heatmap.set("radius", heatmap.get("radius") ? null : 150);
+function setRadius(radius) {
+  heatmap.set("radius", radius);
 }
-function changeOpacity() {
-  heatmap.set("opacity", heatmap.get("opacity") ? null : 0.2);
+function setOpacity(opacity) {
+  heatmap.set("opacity",opacity);
 }
-function toggleMarkers() {
-  if (gotData === true) {
-    if (showingMarkers) {
-      hideMarkers();
-    } else {
-      showMarkers();
-    }
-    showingMarkers = !showingMarkers;
-  } else {
-    addMarkers();
-    showingMarkers = true;
-  }
-}
+
+// <--- Listeners
 function setTilt() {
   adjustMap("tilt", 67.5);
 }
@@ -148,11 +124,34 @@ async function initMap() {
   };
 
   document
-    .getElementById("toggle-markers")
-    .addEventListener("click", toggleMarkers);
+  .getElementById("toggle-markers").addEventListener('change', (event) => {
+    if (gotData === true) {
+      if (showingMarkers) {
+        hideMarkers();
+      } else {
+        showMarkers();
+      }
+      showingMarkers = !showingMarkers;
+    } else {
+      addMarkers();
+      showingMarkers = true;
+    }
+  })
+ 
   document
-    .getElementById("toggle-heatmap")
-    .addEventListener("click", toggleHeatmap);
+  .getElementById("toggle-heatmap").addEventListener('change', (event) => {
+    if (createdHeatmap) {
+      if (showingHeatmap) {
+        heatmap.setMap(null);
+      } else {
+        heatmap.setMap(heatmap.getMap() ? null : map);
+      }
+      showingHeatmap = !showingHeatmap;
+    } else {
+      addHeatMap();
+      showingHeatmap = true;
+    }
+  })
   document.getElementById("tilt").addEventListener("click", setTilt);
 
   const inputOrigin = document.getElementById("origin");
@@ -204,7 +203,6 @@ async function initMap() {
     });
     map.fitBounds(bounds);
   });
-
 
   const inputDestination = document.getElementById("destination");
   const searchBoxDestination = new google.maps.places.SearchBox(inputDestination);
@@ -285,7 +283,6 @@ function searchDirections(directionsService, directionsRenderer, service) {
 }
 
 // <--- Heatmap and Markers Functions
-
 // Get data points for heatmap creation
 function getPoints() {
   var points = [];
@@ -303,15 +300,9 @@ async function addHeatMap() {
       data: getPoints(),
       map: map,
     });
-    document
-      .getElementById("change-gradient")
-      .addEventListener("click", changeGradient);
-    document
-      .getElementById("change-opacity")
-      .addEventListener("click", changeOpacity);
-    document
-      .getElementById("change-radius")
-      .addEventListener("click", changeRadius);
+    setGradient()
+    setRadius(50)
+    setOpacity(0.8)
     adjustMap("tilt", 67.5);
   } else {
     alert("This is a warning message!");

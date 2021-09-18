@@ -280,6 +280,18 @@ body {
 .active #dash1, .active #dash2, .active #dash3 {
 }
 
+#tilt {
+  background-color: Transparent;
+  border-width: 1px;
+  height: 2.5vw;
+  width: 10vw;
+  border-radius: 2px;
+}
+
+#tilt:hover {
+    cursor: pointer;
+}
+
 .border {
   width: 0px;
   height: 2px;
