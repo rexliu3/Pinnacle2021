@@ -192,7 +192,8 @@ body {
   -ms-transform: rotate(-90deg);
   -o-transform: rotate(-90deg);
   transform: rotate(-90deg);
-  right: 50px;
+  position: relative;
+  right: 56px;
 }
 
 /*.buns {
@@ -319,6 +320,7 @@ body {
 
 #logotext {
   cursor: default;
+  font-size: 32px;
 }
 
 #searchButton {
@@ -328,4 +330,8 @@ body {
   cursor:pointer;
   overflow: hidden;
   outline:none;
+}
+
+.space {
+  height: 30px;
 }
