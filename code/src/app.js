@@ -51,7 +51,10 @@ async function initMap() {
   };
 
   var directionsService = new google.maps.DirectionsService();
-  var directionsRenderer = new google.maps.DirectionsRenderer();
+  var directionsRenderer = new google.maps.DirectionsRenderer({
+    draggable: true,
+    map,
+  });
   directionsRenderer.setMap(map);
   directionsRenderer.setPanel(document.getElementById('directionsPanel'));
 
@@ -67,6 +70,19 @@ async function initMap() {
       directionsRenderer.setDirections(response);
     }
   });
+
+  directionsRenderer.addListener("directions_changed", () => {
+    const directions = directionsRenderer.getDirections();
+    if (directions) {
+      computeTotalDistance(directions);
+    }
+  });
+  displayRoute(
+    start,
+    end,
+    directionsService,
+    directionsRenderer
+  );
 
   const contentString =
     '<div id="content">' +
@@ -113,6 +129,38 @@ async function initMap() {
   });
 
   return map;
+}
+
+function displayRoute(origin, destination, service, display) {
+  service
+    .route({
+      origin: origin,
+      destination: destination,
+      travelMode: google.maps.TravelMode.WALKING,
+      avoidTolls: true,
+    })
+    .then((result) => {
+      display.setDirections(result);
+    })
+    .catch((e) => {
+      alert("Could not display directions due to: " + e);
+    });
+}
+
+function computeTotalDistance(result) {
+  let total = 0;
+  const myroute = result.routes[0];
+
+  if (!myroute) {
+    return;
+  }
+
+  for (let i = 0; i < myroute.legs.length; i++) {
+    total += myroute.legs[i].distance.value;
+  }
+
+  total = total / 1000;
+  document.getElementById("total").innerHTML = total + " km";
 }
 
 function initWebglOverlayView(map) {
