@@ -28,12 +28,49 @@
   </head>
   <body>
     <div id="floating-panel">
-      <button id="toggle-heatmap">Toggle Heatmap</button>
-      <button id="change-gradient">Change gradient</button>
-      <button id="change-radius">Change radius</button>
-      <button id="change-opacity">Change opacity</button>
-      <button id="toggle-markers">Toggle Markers</button>
-      <button id="tilt">Tilt</button>
+      <h3>Filters</h3>
+      <div class="switch-container">
+        <label class="switch" id="toggle-heatmap">
+          <input type="checkbox">
+          <span class="slider round"></span>
+        </label>
+        <p id="filter-text">Heatmap</p>
+      </div>
+      <div class="switch-container">
+        <label class="switch" id="change-gradient">
+          <input type="checkbox">
+          <span class="slider round"></span>
+        </label>
+        <p id="filter-text">Gradient</p>
+      </div>
+      <div class="switch-container">
+        <label class="switch" id="change-radius">
+          <input type="checkbox">
+          <span class="slider round"></span>
+        </label>
+        <p id="filter-text">Radius</p>
+      </div>
+      <div class="switch-container">
+        <label class="switch" id="change-opacity">
+          <input type="checkbox">
+          <span class="slider round"></span>
+        </label>
+        <p id="filter-text">Opacity</p>
+      </div>
+      <div class="switch-container">
+        <label class="switch" id="toggle-markers">
+          <input type="checkbox">
+          <span class="slider round"></span>
+        </label>
+        <p id="filter-text">Markers</p>
+      </div>
+      <div class="switch-container">
+        <label class="switch" id="tilt">
+          <input type="checkbox">
+          <span class="slider round"></span>
+        </label>
+        <p id="filter-text">Tilt</p>
+      </div>
     </div>
     <div id="map"></div>
     <div id="directionsPanel" style="float:right;width:30%;height:100%"></div>
