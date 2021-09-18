@@ -36,7 +36,7 @@ const apiOptions = {
 };
 
 const mapOptions = {
-  tilt: 0,
+  tilt: 40,
   heading: 0,
   zoom: 18,
   center: { lat: 34.074949, lng: -118.441318 },

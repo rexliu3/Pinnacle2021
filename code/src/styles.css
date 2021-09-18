@@ -85,8 +85,9 @@ body {
   margin-left: 20px;
 }
 
-input {
-  font-size: 18px;
+.locate {
+  font-size: 20px;
+  font-family: quicksand;
   width: 0px;
   border: 0;
   background: transparent;
@@ -99,15 +100,15 @@ input {
   height: fit-content;  
 }
 
-.active input {
-  font-size: 18px;
+.active .locate   {
+  font-size: 20px;
   width: 380px;   
   border-bottom: 2px;
   border-color: black;
   border-style: solid;
 }
 
-.active .destination {
+.active #destination {
   margin-left: 25px;
 }
 
@@ -151,12 +152,12 @@ input {
   box-shadow: 0 0 5px 0 rgba(0, 0, 0, .2); 
   /*background-color: rgba(255, 255, 255, .15);
   backdrop-filter: blur(5px);*/
-  background: #f0f3ff;;
+  background: #f0f3ff;
   z-index: 99;
   display: flex;
   flex-direction: column;
   align-items: center;
-  padding-top: 66px;
+  padding-top: 47px;
   transition: 1s;
 }
 
@@ -171,11 +172,11 @@ input {
 }
 
 .active #hamburger {
-  -webkit-transform: rotate(45deg);
-  -moz-transform: rotate(45deg);
-  -ms-transform: rotate(45deg);
-  -o-transform: rotate(45deg);
-  transform: rotate(45deg);
+  -webkit-transform: rotate(-90deg);
+  -moz-transform: rotate(-90deg);
+  -ms-transform: rotate(-90deg);
+  -o-transform: rotate(-90deg);
+  transform: rotate(-90deg);
 }
 
 .buns {
@@ -183,10 +184,98 @@ input {
   height: fit-content;
   display: flex;
   justify-content: flex-end;
-  transition: 1s;
-  padding-right: 54px;
+  transition: 1s; 
+  padding: 20px;
+  padding-right: 74.5px;
 }
 
 .active .buns {
   width: 300px;
+}
+
+.dashbar {
+  width: 0px;
+  transition: 1s;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-direction: column;
+  font-size: 18px;
+  color: black;
+  flex-wrap: nowrap;
+}
+
+.active .dashbar {
+  width: 300px;
+  color: black;
+  padding: 0px;
+  border: none;
+}
+
+.dashtext {
+  width: 0px;
+  transition: 1s;
+  padding-left: 10px;
+  cursor: default;
+  color: transparent;
+  padding: 20px;
+
+  font-size: 20px;
+  font-family: quicksand;
+  font-weight: 500;
+  width: 0px;
+  border: 0;
+  background: transparent;
+  outline: none;
+}
+
+.dashtext::placeholder {
+  color: black;
+}
+
+.active .dashtext {
+  width: 300px;
+  cursor: pointer;
+}
+
+.dashbutton {
+  background-color: Transparent;
+  background-repeat:no-repeat;
+  border: none;
+  cursor:pointer;
+  overflow: hidden;
+  outline:none;
+  transition: 0.25s;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  border-radius: 5px;
+}
+
+.dashbutton:active {
+  background: #0000001e;
+}
+
+.active .dashbutton    {
+  width: 300px;
+} 
+
+#dash1, #dash2, #dash3 {
+  font-size: 35px;
+}
+
+.active #dash1, .active #dash2, .active #dash3 {
+}
+
+.border {
+  width: 0px;
+  height: 2px;
+  background: rgb(163, 163, 163);
+  transition: 1s;
+  border-radius: 2px;
+}
+
+.active .border {
+  width: 255px;
+  background: rgb(97, 97, 97);
 }
