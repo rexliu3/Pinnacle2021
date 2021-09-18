@@ -1,0 +1,11 @@
+{
+    "name": "pinnacle2021",
+    "version": "1.0.0",
+    "main": "index.js",
+    "repository": "https://github.com/rexliu3/Pinnacle2021",
+    "author": "lindama <lindima200@gmail.com>",
+    "license": "MIT",
+    "dependencies": {
+        "spotcrime": "^2.0.1"
+    }
+}
