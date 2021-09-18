@@ -192,3 +192,10 @@ function initWebglOverlayView(map) {
   const map = await initMap();
   initWebglOverlayView(map);
 })();
+
+const searchBox = document.getElementById('searchBox'),
+  locationIcon = document.getElementById('locationIcon');
+
+locationIcon.onclick = function () {
+  searchBox.classList.toggle('active');
+};
