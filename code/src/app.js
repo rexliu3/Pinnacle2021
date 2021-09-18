@@ -32,7 +32,7 @@ const apiOptions = {
   apiKey: "AIzaSyA3ACCckrmeyEyl2ZUw72B3dU3UGlCuQCE",
   version: "beta",
   map_ids: ["56e39613eced90d4"],
-  libraries: ["visualization"],
+  libraries: ["visualization", "places"],
 };
 
 const mapOptions = {
@@ -142,8 +142,9 @@ async function initMap() {
   });
 
   var element = document.getElementById("searchButton");
+  var service = new google.maps.places.PlacesService(map);
   element.onclick = function (event) {
-    searchDirections(directionsService, directionsRenderer);
+    searchDirections(directionsService, directionsRenderer, service);
   };
 
   document
@@ -154,13 +155,55 @@ async function initMap() {
     .addEventListener("click", toggleHeatmap);
   document.getElementById("tilt").addEventListener("click", setTilt);
 
+  const inputOrigin = document.getElementById("origin");
+  const searchBoxOrigin = new google.maps.places.SearchBox(inputOrigin);
+  map.addListener("bounds_changed", () => {
+    searchBoxOrigin.setBounds(map.getBounds());
+  });
+
+  const inputDestination = document.getElementById("destination");
+  const searchBoxDestination = new google.maps.places.SearchBox(inputDestination);
+  map.addListener("bounds_changed", () => {
+    searchBoxDestination.setBounds(map.getBounds());
+  });
+
   return map;
 }
 
 // Search fastest path directions 
-function searchDirections(directionsService, directionsRenderer) {
+function searchDirections(directionsService, directionsRenderer, service) {
   var start = document.getElementById("origin").value; // "1580 Point W Blvd, Coppell, TX";
   var end = document.getElementById("destination").value; // "8450 N Belt Line Rd, Irving, TX";
+
+  if (isNaN(start.charAt(0))) {
+    // Place Name
+    var request = {
+      query: start,
+      fields: ["name", "geometry"],
+    };
+    service.findPlaceFromQuery(request, (results, status) => {
+      if (status === google.maps.places.PlacesServiceStatus.OK && results) {
+        for (let i = 0; i < results.length; i++) {
+          createMarker(results[i]);
+        }
+        start = results[0].geometry.location
+      }
+    });
+
+    request = {
+      query: end,
+      fields: ["name", "geometry"],
+    };
+  
+    service.findPlaceFromQuery(request, (results, status) => {
+      if (status === google.maps.places.PlacesServiceStatus.OK && results) {
+        for (let i = 0; i < results.length; i++) {
+          createMarker(results[i]);
+        }
+        end = results[0].geometry.location
+      }
+    });
+  }
 
   if (start !== "" && end !== "") {
     directionsRenderer.setMap(map);
