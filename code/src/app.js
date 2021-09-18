@@ -415,11 +415,13 @@ const searchBox = document.getElementById("searchBox"),
 
 locationIcon.onclick = function () {
   searchBox.classList.toggle("active");
+  searchContainer.classList.toggle("grey");
 };
 
 searchIcon.onclick = function () {
   if (!searchBox.classList.contains("active")) {
     searchBox.classList.toggle("active");
+    searchContainer.classList.toggle("grey")
   }
 };
 
