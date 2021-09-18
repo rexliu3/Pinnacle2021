@@ -19,17 +19,14 @@ import { initializeApp } from "firebase/app";
 import { getFirestore, collection, getDocs } from "firebase/firestore";
 
 const firebaseApp = initializeApp({
-  apiKey: "AIzaSyAIx4fWlxvkL6AF_Vc3QcMS60LVxXOaOOg",
-  authDomain: "pinnacle2021-b6e50.firebaseapp.com",
-  projectId: "pinnacle2021-b6e50",
-  storageBucket: "pinnacle2021-b6e50.appspot.com",
-  messagingSenderId: "12249211641",
-  appId: "1:12249211641:web:429ccd4271bd42b3e77828",
-  measurementId: "G-8F4Z9J2M4R",
+  apiKey: "AIzaSyCUvjvEYUfKivJPJ8xS6inRXlHW4pW0HfA",
+  authDomain: "pinnacle2021v2.firebaseapp.com",
+  projectId: "pinnacle2021v2",
+  storageBucket: "pinnacle2021v2.appspot.com",
+  messagingSenderId: "347442946979",
+  appId: "1:347442946979:web:a12be8ec3003ec7cb9f016",
+  measurementId: "G-9FL3CCBLF5",
 });
-
-const db = getFirestore();
-const querySnapshot = await getDocs(collection(db, "fbi"));
 
 const apiOptions = {
   apiKey: "AIzaSyA3ACCckrmeyEyl2ZUw72B3dU3UGlCuQCE",
@@ -51,64 +48,23 @@ function capitalizeFirstLetter(string) {
   return string.charAt(0).toUpperCase() + string.slice(1);
 }
 
-var map, heatmap;
+const adjustMap = function (mode, amount) {
+  switch (mode) {
+    case "tilt":
+      map.setTilt(map.getTilt() + amount);
+      break;
+    case "rotate":
+      map.setHeading(map.getHeading() + amount);
+      break;
+    default:
+      break;
+  }
+};
 
-async function initMap() {
-  const mapDiv = document.getElementById("map");
-  const apiLoader = new Loader(apiOptions);
-  await apiLoader.load();
-
-  const adjustMap = function (mode, amount) {
-    switch (mode) {
-      case "tilt":
-        map.setTilt(map.getTilt() + amount);
-        break;
-      case "rotate":
-        map.setHeading(map.getHeading() + amount);
-        break;
-      default:
-        break;
-    }
-  };
-
-  map = new google.maps.Map(mapDiv, mapOptions);
-  await addMarkers(adjustMap);
-
-  var directionsService = new google.maps.DirectionsService();
-  var directionsRenderer = new google.maps.DirectionsRenderer({
-    draggable: true,
-    map,
-  });
-
-  var element = document.getElementById("searchButton");
-  element.onclick = function (event) {
-    searchDirections(directionsService, directionsRenderer, adjustMap);
-  };
-
-  heatmap = new google.maps.visualization.HeatmapLayer({
-    data: getPoints(),
-    map: map,
-  });
-  document
-    .getElementById("toggle-heatmap")
-    .addEventListener("click", toggleHeatmap);
-  document
-    .getElementById("change-gradient")
-    .addEventListener("click", changeGradient);
-  document
-    .getElementById("change-opacity")
-    .addEventListener("click", changeOpacity);
-  document
-    .getElementById("change-radius")
-    .addEventListener("click", changeRadius);
-
-  return map;
-}
-
+// <--- Listeners
 function toggleHeatmap() {
   heatmap.setMap(heatmap.getMap() ? null : map);
 }
-
 function changeGradient() {
   const gradient = [
     "rgba(0, 255, 255, 0)",
@@ -129,28 +85,57 @@ function changeGradient() {
 
   heatmap.set("gradient", heatmap.get("gradient") ? null : gradient);
 }
-
 function changeRadius() {
   heatmap.set("radius", heatmap.get("radius") ? null : 150);
 }
-
 function changeOpacity() {
   heatmap.set("opacity", heatmap.get("opacity") ? null : 0.2);
+}
+function toggleMarkers() {
+  addMarkers();
+}
+// --->
+
+var map, heatmap;
+var gotData = false;
+var createdHeatmap = false;
+
+async function initMap() {
+  const mapDiv = document.getElementById("map");
+  const apiLoader = new Loader(apiOptions);
+  await apiLoader.load();
+
+  map = new google.maps.Map(mapDiv, mapOptions);
+
+  var directionsService = new google.maps.DirectionsService();
+  var directionsRenderer = new google.maps.DirectionsRenderer({
+    draggable: true,
+    map,
+  });
+
+  var element = document.getElementById("searchButton");
+  element.onclick = function (event) {
+    searchDirections(directionsService, directionsRenderer);
+  };
+
+  document
+    .getElementById("toggle-markers")
+    .addEventListener("click", toggleMarkers);
+
+  return map;
 }
 
 function getPoints() {
   var points = [];
   querySnapshot.forEach((doc) => {
-    points.push(new google.maps.LatLng(doc.data().latitude, doc.data().longitude))
+    points.push(
+      new google.maps.LatLng(doc.data().latitude, doc.data().longitude)
+    );
   });
   return points;
 }
 
-function searchDirections(
-  directionsService,
-  directionsRenderer,
-  adjustMap
-) {
+function searchDirections(directionsService, directionsRenderer) {
   var start = document.getElementById("origin").value; // "1580 Point W Blvd, Coppell, TX";
   var end = document.getElementById("destination").value; // "8450 N Belt Line Rd, Irving, TX";
 
@@ -177,20 +162,46 @@ function searchDirections(
     });
     displayRoute(start, end, directionsService, directionsRenderer);
     adjustMap("tilt", 67.5);
-    
+
     var geocoder = new google.maps.Geocoder();
-    geocoder.geocode( { 'address': start}, function(results, status) {
+    geocoder.geocode({ address: start }, function (results, status) {
       if (status == google.maps.GeocoderStatus.OK) {
         var latitude = results[0].geometry.location.lat();
         var longitude = results[0].geometry.location.lng();
-        map.setCenter({lat: latitude, lng: longitude})        } 
+        map.setCenter({ lat: latitude, lng: longitude });
+      }
     });
+  }
+}
 
+async function addHeatMap() {
+  if (gotData === true) {
+    heatmap = new google.maps.visualization.HeatmapLayer({
+      data: getPoints(),
+      map: map,
+    });
+    document
+      .getElementById("toggle-heatmap")
+      .addEventListener("click", toggleHeatmap);
+    document
+      .getElementById("change-gradient")
+      .addEventListener("click", changeGradient);
+    document
+      .getElementById("change-opacity")
+      .addEventListener("click", changeOpacity);
+    document
+      .getElementById("change-radius")
+      .addEventListener("click", changeRadius);
+    adjustMap("tilt", 67.5);
+  } else {
     
   }
 }
 
-async function addMarkers(adjustMap) {
+async function addMarkers() {
+  const db = getFirestore();
+  const querySnapshot = await getDocs(collection(db, "fbi"));
+
   querySnapshot.forEach((doc) => {
     const contentString =
       '<div id="content">' +
@@ -228,6 +239,7 @@ async function addMarkers(adjustMap) {
       });
     });
   });
+  gotData = true;
 }
 
 function displayRoute(origin, destination, service, display) {
@@ -359,5 +371,5 @@ searchIcon.onclick = function () {
 
 hamburgerIcon.onclick = function () {
   dashContainer.classList.toggle("active");
-  searchContainer.classList.toggle("adjust")
-}
+  searchContainer.classList.toggle("adjust");
+};
