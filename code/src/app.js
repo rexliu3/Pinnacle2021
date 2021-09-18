@@ -32,7 +32,7 @@ const apiOptions = {
   apiKey: "AIzaSyA3ACCckrmeyEyl2ZUw72B3dU3UGlCuQCE",
   version: "beta",
   map_ids: ["56e39613eced90d4"],
-  libraries: ["visualization"],
+  libraries: ["visualization", "places"],
 };
 
 const mapOptions = {
@@ -70,21 +70,8 @@ const adjustMap = function (mode, amount) {
 };
 // End of Helper Functions --->
 
-// <--- Listeners
-function toggleHeatmap() {
-  if (createdHeatmap) {
-    if (showingHeatmap) {
-      heatmap.setMap(null);
-    } else {
-      heatmap.setMap(heatmap.getMap() ? null : map);
-    }
-    showingHeatmap = !showingHeatmap;
-  } else {
-    addHeatMap();
-    showingHeatmap = true;
-  }
-}
-function changeGradient() {
+
+function setGradient() {
   const gradient = [
     "rgba(0, 255, 255, 0)",
     "rgba(0, 255, 255, 1)",
@@ -102,27 +89,16 @@ function changeGradient() {
     "rgba(255, 0, 0, 1)",
   ];
 
-  heatmap.set("gradient", heatmap.get("gradient") ? null : gradient);
+  heatmap.set("gradient", gradient);
 }
-function changeRadius() {
-  heatmap.set("radius", heatmap.get("radius") ? null : 150);
+function setRadius(radius) {
+  heatmap.set("radius", radius);
 }
-function changeOpacity() {
-  heatmap.set("opacity", heatmap.get("opacity") ? null : 0.2);
+function setOpacity(opacity) {
+  heatmap.set("opacity",opacity);
 }
-function toggleMarkers() {
-  if (gotData === true) {
-    if (showingMarkers) {
-      hideMarkers();
-    } else {
-      showMarkers();
-    }
-    showingMarkers = !showingMarkers;
-  } else {
-    addMarkers();
-    showingMarkers = true;
-  }
-}
+
+// <--- Listeners
 function setTilt() {
   adjustMap("tilt", 67.5);
 }
@@ -142,25 +118,134 @@ async function initMap() {
   });
 
   var element = document.getElementById("searchButton");
+  var service = new google.maps.places.PlacesService(map);
   element.onclick = function (event) {
-    searchDirections(directionsService, directionsRenderer);
+    searchDirections(directionsService, directionsRenderer, service);
   };
 
   document
-    .getElementById("toggle-markers")
-    .addEventListener("click", toggleMarkers);
+  .getElementById("toggle-markers").addEventListener('change', (event) => {
+    if (gotData === true) {
+      if (showingMarkers) {
+        hideMarkers();
+      } else {
+        showMarkers();
+      }
+      showingMarkers = !showingMarkers;
+    } else {
+      addMarkers();
+      showingMarkers = true;
+    }
+  })
+ 
   document
-    .getElementById("toggle-heatmap")
-    .addEventListener("click", toggleHeatmap);
+  .getElementById("toggle-heatmap").addEventListener('change', (event) => {
+    if (createdHeatmap) {
+      if (showingHeatmap) {
+        heatmap.setMap(null);
+      } else {
+        heatmap.setMap(heatmap.getMap() ? null : map);
+      }
+      showingHeatmap = !showingHeatmap;
+    } else {
+      addHeatMap();
+      showingHeatmap = true;
+    }
+  })
   document.getElementById("tilt").addEventListener("click", setTilt);
 
+  const inputOrigin = document.getElementById("origin");
+  const searchBoxOrigin = new google.maps.places.SearchBox(inputOrigin);
+  map.addListener("bounds_changed", () => {
+    searchBoxOrigin.setBounds(map.getBounds());
+  });
+  // Listen for the event fired when the user selects a prediction and retrieve
+  // more details for that place.
+  searchBoxOrigin.addListener("places_changed", () => {
+    const places = searchBoxOrigin.getPlaces();
+
+    if (places.length == 0) {
+      return;
+    }
+
+    // For each place, get the icon, name and location.
+    const bounds = new google.maps.LatLngBounds();
+
+    places.forEach((place) => {
+      if (!place.geometry || !place.geometry.location) {
+        console.log("Returned place contains no geometry");
+        return;
+      }
+
+      const icon = {
+        url: place.icon,
+        size: new google.maps.Size(71, 71),
+        origin: new google.maps.Point(0, 0),
+        anchor: new google.maps.Point(17, 34),
+        scaledSize: new google.maps.Size(25, 25),
+      };
+
+      // Create a marker for each place.
+      markers.push(
+        new google.maps.Marker({
+          map,
+          icon,
+          title: place.name,
+          position: place.geometry.location,
+        })
+      );
+      if (place.geometry.viewport) {
+        // Only geocodes have viewport.
+        bounds.union(place.geometry.viewport);
+      } else {
+        bounds.extend(place.geometry.location);
+      }
+    });
+    map.fitBounds(bounds);
+  });
+
+  const inputDestination = document.getElementById("destination");
+  const searchBoxDestination = new google.maps.places.SearchBox(inputDestination);
+  map.addListener("bounds_changed", () => {
+    searchBoxDestination.setBounds(map.getBounds());
+  });
   return map;
 }
 
 // Search fastest path directions 
-function searchDirections(directionsService, directionsRenderer) {
+function searchDirections(directionsService, directionsRenderer, service) {
   var start = document.getElementById("origin").value; // "1580 Point W Blvd, Coppell, TX";
   var end = document.getElementById("destination").value; // "8450 N Belt Line Rd, Irving, TX";
+
+  if (isNaN(start.charAt(0))) {
+    // Place Name
+    var request = {
+      query: start,
+      fields: ["name", "geometry"],
+    };
+    service.findPlaceFromQuery(request, (results, status) => {
+      if (status === google.maps.places.PlacesServiceStatus.OK && results) {
+        for (let i = 0; i < results.length; i++) {
+          createMarker(results[i]);
+        }
+        start = results[0].geometry.location
+      }
+    });
+
+    request = {
+      query: end,
+      fields: ["name", "geometry"],
+    };
+  
+    service.findPlaceFromQuery(request, (results, status) => {
+      if (status === google.maps.places.PlacesServiceStatus.OK && results) {
+        for (let i = 0; i < results.length; i++) {
+          createMarker(results[i]);
+        }
+        end = results[0].geometry.location
+      }
+    });
+  }
 
   if (start !== "" && end !== "") {
     directionsRenderer.setMap(map);
@@ -174,6 +259,7 @@ function searchDirections(directionsService, directionsRenderer) {
     directionsService.route(request, function (response, status) {
       if (status == "OK") {
         directionsRenderer.setDirections(response);
+        console.log(response);
       }
     });
 
@@ -198,7 +284,6 @@ function searchDirections(directionsService, directionsRenderer) {
 }
 
 // <--- Heatmap and Markers Functions
-
 // Get data points for heatmap creation
 function getPoints() {
   var points = [];
@@ -216,15 +301,9 @@ async function addHeatMap() {
       data: getPoints(),
       map: map,
     });
-    document
-      .getElementById("change-gradient")
-      .addEventListener("click", changeGradient);
-    document
-      .getElementById("change-opacity")
-      .addEventListener("click", changeOpacity);
-    document
-      .getElementById("change-radius")
-      .addEventListener("click", changeRadius);
+    setGradient()
+    setRadius(50)
+    setOpacity(0.8)
     adjustMap("tilt", 67.5);
   } else {
     alert("This is a warning message!");
@@ -411,11 +490,15 @@ const searchBox = document.getElementById("searchBox"),
   searchIcon = document.getElementById("searchIcon"),
   hamburgerIcon = document.getElementById("hamburger"),
   dashContainer = document.getElementById("dashContainer"),
-  searchContainer = document.getElementById("searchContainer");
+  searchContainer = document.getElementById("searchContainer"),
+  directionsContainer = document.getElementById("directions");
 
 locationIcon.onclick = function () {
   searchBox.classList.toggle("active");
   searchContainer.classList.toggle("grey");
+  if (directionsContainer.classList.contains("active")) {
+    directionsContainer.classList.toggle("active")
+  }
 };
 
 searchIcon.onclick = function () {
@@ -423,6 +506,7 @@ searchIcon.onclick = function () {
     searchBox.classList.toggle("active");
     searchContainer.classList.toggle("grey")
   }
+  directionsContainer.classList.toggle("active");
 };
 
 hamburgerIcon.onclick = function () {

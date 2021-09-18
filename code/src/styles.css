@@ -134,26 +134,21 @@ body {
 
 #floating-panel {
   position: absolute;
-  top: 10px;
-  left: 25%;
+  top: 58%;
+  right: 5%;
   z-index: 5;
   background-color: #fff;
-  padding: 5px;
-  border: 1px solid #999;
-  text-align: center;
+  border-radius: 2px;
+  padding: 10px;
+  border: 1px solid #ccc;
+  text-align: left;
   font-family: "Roboto", "sans-serif";
   line-height: 30px;
-  padding-left: 10px;
-}
-
-#floating-panel {
-  background-color: #fff;
-  border: 1px solid #999;
-  left: 25%;
-  padding: 5px;
-  position: absolute;
-  top: 10px;
-  z-index: 5;
+  width: 150px;
+  height: 300px;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-evenly;
 }
 
 .dashboard {
@@ -192,7 +187,8 @@ body {
   -ms-transform: rotate(-90deg);
   -o-transform: rotate(-90deg);
   transform: rotate(-90deg);
-  right: 50px;
+  position: relative;
+  right: 56px;
 }
 
 /*.buns {
@@ -228,7 +224,7 @@ body {
 
 .dashtext {
   width: 0px;
-  transition: 1s;
+  transition: 1s;   
   padding-left: 10px;
   cursor: default;
   color: transparent;
@@ -284,12 +280,24 @@ body {
 .active #dash1, .active #dash2, .active #dash3 {
 }
 
+#tilt {
+  background-color: Transparent;
+  border-width: 1px;
+  height: 2.5vw;
+  width: 10vw;
+  border-radius: 2px;
+}
+
+#tilt:hover {
+    cursor: pointer;
+}
+
 .border {
   width: 0px;
   height: 2px;
   background: rgb(163, 163, 163);
   transition: 1s;
-  border-radius: 2px;
+  border-radius: 1px;
 }
 
 .active .border {
@@ -297,6 +305,76 @@ body {
   background: rgb(97, 97, 97);
 }
 
+.switch-container {
+  display: flex;
+  align-content: left;
+}
+
+.switch {
+  position: relative;
+  display: inline-block;
+  width: 60px;
+  height: 34px;
+  margin-right: 10px;
+} 
+
+.switch input { 
+  opacity: 0;
+  width: 0;
+  height: 0;
+}
+
+.slider {
+  position: absolute;
+  cursor: pointer;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: #ccc;
+  -webkit-transition: .4s;
+  transition: .4s;
+}
+
+.slider:before {
+  position: absolute;
+  content: "";
+  height: 26px;
+  width: 26px;
+  left: 4px;
+  bottom: 4px;
+  background-color: white;
+  -webkit-transition: .4s;
+  transition: .4s;
+}
+
+input:checked + .slider {
+  background-color: #2196F3;
+}
+
+input:focus + .slider {
+  box-shadow: 0 0 1px #2196F3;
+}
+
+input:checked + .slider:before {
+  -webkit-transform: translateX(26px);
+  -ms-transform: translateX(26px);
+  transform: translateX(26px);
+}
+
+/* Rounded sliders */
+.slider.round {
+  border-radius: 34px;
+}
+
+.slider.round:before {
+  border-radius: 50%;
+}
+
+.filter-text {
+  float: left;
+  justify-content: left;
+}
 .logo {
   display: flex;
   align-items: center;
@@ -319,6 +397,7 @@ body {
 
 #logotext {
   cursor: default;
+  font-size: 28px;
 }
 
 #searchButton {
@@ -328,4 +407,28 @@ body {
   cursor:pointer;
   overflow: hidden;
   outline:none;
+}
+
+.space {
+  height: 30px;
+}
+
+#directionsPanel {
+  position: relative;
+  bottom: 515px;
+  left: 11  6px;
+  width: 500px;
+  height: 500px;
+  transition: 1.5s;
+  padding: 30px;
+  border-radius: 30px;
+  opacity: 0;
+}
+
+.active #directionsPanel {
+  opacity: 100;
+  background:#f0f3ff;
+
+  box-shadow: 6px 6px 10px -1px rgba(0, 0, 0, 0.15),
+  -6px -6px 10px -1px rgba(255, 255, 255, 0.7);
 }

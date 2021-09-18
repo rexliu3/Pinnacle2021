@@ -28,24 +28,38 @@
   </head>
   <body>
     <div id="floating-panel">
-      <button id="toggle-heatmap">Toggle Heatmap</button>
-      <button id="change-gradient">Change gradient</button>
-      <button id="change-radius">Change radius</button>
-      <button id="change-opacity">Change opacity</button>
-      <button id="toggle-markers">Toggle Markers</button>
+      <h3>Filters</h3>
+      <div class="switch-container">
+        <label class="switch" id="toggle-heatmap">
+          <input type="checkbox">
+          <span class="slider round"></span>
+        </label>
+        <p id="filter-text">Heatmap</p>
+      </div>
+      <div class="switch-container">
+        <label class="switch" >
+          <input type="checkbox" id="toggle-markers">
+          <span class="slider round"></span>
+        </label>
+        <p id="filter-text">Markers</p>
+      </div>
       <button id="tilt">Tilt</button>
     </div>
     <div id="map"></div>
-    <div id="directionsPanel" style="float:right;width:30%;height:100%"></div>
+    <div id="directions">
+      <div id="directionsPanel"></div>
+    </div>
+    
     <div id="total"></div>
     <div id="dashContainer">
       <div class=dashboard>
         <div class="logo">
-          <input id="logotext" class="dashtext" aria-hidden="true" placeholder="WalkSafe"/>
+          <input id="logotext" class="dashtext" aria-hidden="true" placeholder="Dashboard"/>
           <i class="fa fa-bars" aria-hidden="true" id="hamburger"></i>
         </div>
         
         <div class="dashbar">
+          <div class="space"></div>
           <button class="dashbutton" id="dash1">
             <!--<i class="fa fa-question" aria-hidden="true"></i>-->
             <input class="dashtext" aria-hidden="true" placeholder="FAQ"/>
