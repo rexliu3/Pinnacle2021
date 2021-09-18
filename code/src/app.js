@@ -261,6 +261,7 @@ function searchDirections(directionsService, directionsRenderer, service) {
     directionsService.route(request, function (response, status) {
       if (status == "OK") {
         directionsRenderer.setDirections(response);
+        console.log(response);
       }
     });
 
@@ -498,11 +499,15 @@ const searchBox = document.getElementById("searchBox"),
   searchIcon = document.getElementById("searchIcon"),
   hamburgerIcon = document.getElementById("hamburger"),
   dashContainer = document.getElementById("dashContainer"),
-  searchContainer = document.getElementById("searchContainer");
+  searchContainer = document.getElementById("searchContainer"),
+  directionsContainer = document.getElementById("directions");
 
 locationIcon.onclick = function () {
   searchBox.classList.toggle("active");
   searchContainer.classList.toggle("grey");
+  if (directionsContainer.classList.contains("active")) {
+    directionsContainer.classList.toggle("active")
+  }
 };
 
 searchIcon.onclick = function () {
@@ -510,6 +515,7 @@ searchIcon.onclick = function () {
     searchBox.classList.toggle("active");
     searchContainer.classList.toggle("grey")
   }
+  directionsContainer.classList.toggle("active");
 };
 
 hamburgerIcon.onclick = function () {

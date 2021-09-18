@@ -400,3 +400,23 @@ input:checked + .slider:before {
 .space {
   height: 30px;
 }
+
+#directionsPanel {
+  position: relative;
+  bottom: 515px;
+  left: 11  6px;
+  width: 500px;
+  height: 500px;
+  transition: 1.5s;
+  padding: 30px;
+  border-radius: 30px;
+  opacity: 0;
+}
+
+.active #directionsPanel {
+  opacity: 100;
+  background:#f0f3ff;
+
+  box-shadow: 6px 6px 10px -1px rgba(0, 0, 0, 0.15),
+  -6px -6px 10px -1px rgba(255, 255, 255, 0.7);
+}
