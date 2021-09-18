@@ -131,7 +131,7 @@ function changeGradient() {
 }
 
 function changeRadius() {
-  heatmap.set("radius", heatmap.get("radius") ? null : 100);
+  heatmap.set("radius", heatmap.get("radius") ? null : 150);
 }
 
 function changeOpacity() {
@@ -177,6 +177,16 @@ function searchDirections(
     });
     displayRoute(start, end, directionsService, directionsRenderer);
     adjustMap("tilt", 67.5);
+    
+    var geocoder = new google.maps.Geocoder();
+    geocoder.geocode( { 'address': start}, function(results, status) {
+      if (status == google.maps.GeocoderStatus.OK) {
+        var latitude = results[0].geometry.location.lat();
+        var longitude = results[0].geometry.location.lng();
+        map.setCenter({lat: latitude, lng: longitude})        } 
+    });
+
+    
   }
 }
 
