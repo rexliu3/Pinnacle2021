@@ -28,8 +28,7 @@ const mapOptions = {
   zoom: 18,
   center: { lat: 32.9270316, lng: -96.9962565 },
   mapId: "56e39613eced90d4",
-  mapTypeControlOptions: {
-  },
+  mapTypeControl: false,
 };
 
 async function initMap() {

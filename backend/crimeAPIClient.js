@@ -1,6 +1,6 @@
 const crimeHotspot = require('spotcrime');
 
-// uc berkeley
+// ucla
 const loc = {
   lat: 34.0689,
   lon: -118.4452

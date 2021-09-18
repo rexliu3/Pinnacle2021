@@ -1,1 +1,3 @@
 node_modules
+/backend/script.py
+/backend/test.py
