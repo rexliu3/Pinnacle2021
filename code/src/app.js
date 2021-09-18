@@ -64,9 +64,15 @@ const adjustMap = function (mode, amount) {
 // <--- Listeners
 function toggleHeatmap() {
   if (createdHeatmap) {
-    heatmap.setMap(heatmap.getMap() ? null : map);
+    if (showingHeatmap) {
+      heatmap.setMap(null)
+    } else {
+      heatmap.setMap(heatmap.getMap() ? null : map);
+    }
+    showingHeatmap = !showingHeatmap;
   } else {
     addHeatMap();
+    showingHeatmap = true;
   }
 }
 function changeGradient() {
@@ -98,12 +104,17 @@ function changeOpacity() {
 function toggleMarkers() {
   addMarkers();
 }
+function setTilt() {
+  adjustMap("tilt", 67.5);
+}
 // --->
 
 var querySnapshot;
 var map, heatmap;
 var gotData = false;
 var createdHeatmap = false;
+var showingHeatmap = false;
+var markers = [];
 
 async function initMap() {
   const mapDiv = document.getElementById("map");
@@ -129,6 +140,9 @@ async function initMap() {
   document
     .getElementById("toggle-heatmap")
     .addEventListener("click", toggleHeatmap);
+    document
+    .getElementById("tilt")
+    .addEventListener("click", setTilt);
 
   return map;
 }
@@ -201,6 +215,7 @@ async function addHeatMap() {
   } else {
     alert ("This is a warning message!");
   }
+  createdHeatmap = true;
 }
 
 async function addMarkers() {
@@ -243,8 +258,27 @@ async function addMarkers() {
         shouldFocus: false,
       });
     });
+
+    markers.push(marker)
   });
   gotData = true;
+}
+
+// Sets the map on all markers in the array.
+function setMapOnAll(map) {
+  for (let i = 0; i < markers.length; i++) {
+    markers[i].setMap(map);
+  }
+}
+
+// Removes the markers from the map, but keeps them in the array.
+function hideMarkers() {
+  setMapOnAll(null);
+}
+
+// Shows any markers currently in the array.
+function showMarkers() {
+  setMapOnAll(map);
 }
 
 function displayRoute(origin, destination, service, display) {
