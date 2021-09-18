@@ -50,6 +50,24 @@ async function initMap() {
     }
   };
 
+  var directionsService = new google.maps.DirectionsService();
+  var directionsRenderer = new google.maps.DirectionsRenderer();
+  directionsRenderer.setMap(map);
+  directionsRenderer.setPanel(document.getElementById('directionsPanel'));
+
+  var start = "1580 Point W Blvd, Coppell, TX";// document.getElementById('start').value;
+  var end = "8450 N Belt Line Rd, Irving, TX" // document.getElementById('end').value;
+  var request = {
+    origin:start,
+    destination:end,
+    travelMode: 'WALKING'
+  };
+  directionsService.route(request, function(response, status) {
+    if (status == 'OK') {
+      directionsRenderer.setDirections(response);
+    }
+  });
+
   const contentString =
     '<div id="content">' +
     '<div id="siteNotice">' +
