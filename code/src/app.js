@@ -29,6 +29,7 @@ const firebaseApp = initializeApp({
 });
 
 const db = getFirestore();
+const querySnapshot = await getDocs(collection(db, "fbi"));
 
 const apiOptions = {
   apiKey: "AIzaSyA3ACCckrmeyEyl2ZUw72B3dU3UGlCuQCE",
@@ -43,7 +44,7 @@ const mapOptions = {
   center: { lat: 32.9270316, lng: -96.9962565 },
   mapId: "56e39613eced90d4",
   mapTypeControlOptions: {},
-  mapTypeControl: false,
+ 
 };
 
 function capitalizeFirstLetter(string) {
@@ -54,8 +55,6 @@ async function initMap() {
   const mapDiv = document.getElementById("map");
   const apiLoader = new Loader(apiOptions);
   await apiLoader.load();
-
-  var map = new google.maps.Map(mapDiv, mapOptions);
 
   const adjustMap = function (mode, amount) {
     switch (mode) {
@@ -70,13 +69,14 @@ async function initMap() {
     }
   };
 
+  var map = new google.maps.Map(mapDiv, mapOptions);
+  await addMarkers(map, adjustMap);
+
   var directionsService = new google.maps.DirectionsService();
   var directionsRenderer = new google.maps.DirectionsRenderer({
     draggable: true,
     map,
   });
-
-  await addMarkers(map, adjustMap);
 
   var element = document.getElementById("searchButton");
   element.onclick = function (event) {
@@ -122,8 +122,6 @@ function searchDirections(
 }
 
 async function addMarkers(map, adjustMap) {
-  const querySnapshot = await getDocs(collection(db, "fbi"));
-
   querySnapshot.forEach((doc) => {
     const contentString =
       '<div id="content">' +
