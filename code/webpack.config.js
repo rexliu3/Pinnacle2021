@@ -29,7 +29,7 @@ const CONFIG = {
 
   plugins: [
     // Read google maps token from environment variable
-    new webpack.EnvironmentPlugin(['AIzaSyA3ACCckrmeyEyl2ZUw72B3dU3UGlCuQCE'])
+    new webpack.EnvironmentPlugin(['NODE_ENV', 'DEBUG'])
   ]
 };
 
