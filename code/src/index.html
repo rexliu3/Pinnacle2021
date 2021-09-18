@@ -20,11 +20,26 @@
     <meta http-equiv="content-type" content="text/html; charset=utf-8" />
     <title>Google Maps Platform WebGL Codelab</title> 
     <link rel="stylesheet" type="text/css" href="./styles.css" />   
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css"
+    />
     <script src="./app.js" defer></script>    
   </head>
   <body>
     <div id="map"></div>
     <div id="directionsPanel" style="float:right;width:30%;height:100%"></div>
     <div id="total"></div>
+    <div class="hero">
+      <div id="searchBox">
+        <i class="fa fa-location-arrow" aria-hidden="true" id="locationIcon"></i>
+        <div id="search">
+          <input type="text" class="origin" placeholder="Origin" />
+          <input type="text" class="destination" placeholder="Destination">
+          <i class="fa fa-search" aria-hidden="true" id="searchIcon"></i>
+        </div>
+      </div>
+    </div>
   </body>
 </html>
+
