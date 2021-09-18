@@ -41,7 +41,7 @@ const mapOptions = {
   tilt: 0,
   heading: 0,
   zoom: 18,
-  center: { lat: 32.9270316, lng: -96.9962565 },
+  center: { lat: 34.074949, lng: -118.441318 },
   mapId: "56e39613eced90d4",
   mapTypeControlOptions: {},
  
@@ -82,7 +82,10 @@ async function initMap() {
   element.onclick = function (event) {
     searchDirections(map, directionsService, directionsRenderer, adjustMap);
   };
-
+  
+  google.maps.event.addListenerOnce(map, 'idle', function() {
+    $('.gm-style').css("opacity", 0.65)
+  });
   return map;
 }
 
