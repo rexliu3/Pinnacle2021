@@ -21,13 +21,13 @@ import { initializeApp } from "firebase/app";
 import { getFirestore, collection, getDocs, addDoc } from "firebase/firestore";
 
 const firebaseApp = initializeApp({
-  apiKey: "AIzaSyA6YPYe0rFLvarGDEGbUdFfIXIKAwwHRgA",
-  authDomain: "pinnacle2021v5.firebaseapp.com",
-  projectId: "pinnacle2021v5",
-  storageBucket: "pinnacle2021v5.appspot.com",
-  messagingSenderId: "828758736921",
-  appId: "1:828758736921:web:0fee74be368c6adcedea88",
-  measurementId: "G-10YQ1MREYN"
+  apiKey: "AIzaSyAIx4fWlxvkL6AF_Vc3QcMS60LVxXOaOOg",
+  authDomain: "pinnacle2021-b6e50.firebaseapp.com",
+  projectId: "pinnacle2021-b6e50",
+  storageBucket: "pinnacle2021-b6e50.appspot.com",
+  messagingSenderId: "12249211641",
+  appId: "1:12249211641:web:429ccd4271bd42b3e77828",
+  measurementId: "G-8F4Z9J2M4R"
 });
 
 const apiOptions = {
@@ -49,6 +49,7 @@ const mapOptions = {
 
 var svgMarker;
 var image;
+var polyline;
 
 var querySnapshot;
 var map, heatmap;
@@ -57,6 +58,8 @@ var createdMarkers = false;
 var showingMarkers = false;
 var showingHeatmap = false;
 var markers = [];
+
+var symbol;
 
 // <--- Helper Functions
 function capitalizeFirstLetter(string) {
@@ -127,14 +130,10 @@ async function initMap() {
     anchor: new google.maps.Point(0, 35),
   };
 
-  image = {
-    url: "./assets/car.png",
-    // This marker is 20 pixels wide by 32 pixels high.
-    size: new google.maps.Size(20, 32),
-    // The origin for this image is (0, 0).
-    origin: new google.maps.Point(0, 0),
-    // The anchor for this image is the base of the flagpole at (0, 32).
-    anchor: new google.maps.Point(0, 32),
+  symbol = {
+    path: google.maps.SymbolPath.FORWARD_CLOSED_ARROW	,
+    scale: 5,
+    strokeColor: "#393",
   };
 
   var directionsService = new google.maps.DirectionsService();
@@ -243,6 +242,19 @@ async function initMap() {
   return map;
 }
 
+function animateCircle(line) {
+  let count = 0;
+
+  window.setInterval(() => {
+    count = (count + 0.2) % 200;
+
+    const icons = line.get("icons");
+
+    icons[0].offset = count / 2 + "%";
+    line.set("icons", icons);
+  }, 20);
+}
+
 // Search fastest path directions
 async function searchDirections(directionsService, directionsRenderer, service) {
   var start = document.getElementById("origin").value; // "1580 Point W Blvd, Coppell, TX";
@@ -292,9 +304,39 @@ async function searchDirections(directionsService, directionsRenderer, service) 
     };
     directionsService.route(request, function (response, status) {
       if (status == "OK") {
+        polyline = new google.maps.Polyline({
+          path: [],
+          strokeColor: '#0000FF',
+          strokeWeight: 3,
+          icons: [
+            {
+              icon: symbol,
+              offset: "100%",
+            },
+          ],
+        });
+        var bounds = new google.maps.LatLngBounds();
+
+        var legs = response.routes[0].legs;
+        for (let i = 0; i < legs.length; i++) {
+          var steps = legs[i].steps;
+          for (let j = 0; j < steps.length; j++) {
+            var nextSegment = steps[j].path;
+            for (let k = 0; k < nextSegment.length; k++) {
+              console.log("here");
+              polyline.getPath().push(nextSegment[k]);
+              bounds.extend(nextSegment[k]);
+            }
+          }
+        }
+        polyline.setMap(map);
+
         directionsRenderer.setDirections(response);
+
+        animateCircle(polyline);
       }
     });
+    
 
     directionsRenderer.addListener("directions_changed", () => {
       const directions = directionsRenderer.getDirections();
@@ -378,6 +420,26 @@ async function addMarkers() {
           adjustMap("tilt", 67.5);
         });
 
+        image = {
+          url: "http://www.simpleimageresizer.com/_uploads/photos/5923593c/car-min_1_35x35.png",
+          // This marker is 100 pixels wide by 35 pixels high.
+          size: new google.maps.Size(100, 35),
+          // The origin for this image is (0, 0).
+          origin: new google.maps.Point(0, 0),
+          // The anchor for this image is the base of the flagpole at (0, 32).
+          anchor: new google.maps.Point(0, 32),
+        };
+
+        if (doc.data().offense === "violent-crime" || doc.data().offense === "homicide" ) {
+          image.url = "http://www.simpleimageresizer.com/_uploads/photos/5923593c/Pngtree_knife_icon_circle_5278662-removebg-preview_35x35.png";
+        } else if (doc.data().offense === "aggravated-assault" || doc.data().offense === "rape" ||  doc.data().offense === "rape-legacy") {
+          image.url = "http://www.simpleimageresizer.com/_uploads/photos/5923593c/assault_1_35x35.png";
+        } else if (doc.data().offense === "arson") {
+          image.url = "http://www.simpleimageresizer.com/_uploads/photos/5923593c/arson-removebg-preview_35x35.png";
+        } else if (doc.data().offense === "burglary" || doc.data().offense === "larceny" || doc.data().offense === "robbery") {
+          image.url = "http://www.simpleimageresizer.com/_uploads/photos/5923593c/burglary_35x35.png";
+        }
+
         const marker = new google.maps.Marker({
           position: { lat: doc.data().latitude, lng: doc.data().longitude },
           map,
@@ -431,6 +493,7 @@ function displayRoute(origin, destination, service, display, pts) {
       waypoints: pts
     })
     .then((result) => {
+      console.log(result.routes[0].overview_path)
       display.setDirections(result);
     })
     .catch((e) => {
@@ -679,8 +742,8 @@ async function getAvoidAreaString(start, end) {
       yy = y1 + param * D;
     }
 
-    var dx = x - xx;
-    var dy = y - yy;
+    var dx = x0 - xx;
+    var dy = y0 - yy;
     return Math.sqrt(dx * dx + dy * dy);
   };
 
