@@ -271,7 +271,7 @@ async function searchDirections(directionsService, directionsRenderer, service) 
     directionsRenderer.setMap(map);
     directionsRenderer.setPanel(document.getElementById("directionsPanel"));
     
-    var pts = await getWaypoints(start, end).then((res) => res);
+    var pts = await getWaypoints(start, end);
 
     var request = {
       origin: start,
@@ -663,10 +663,10 @@ async function getRouteNoObstacles(start, end) {
     });
 }
 
-function getWaypoints(start, end) {
+async function getWaypoints(start, end) {
   var waypoints = [];
   var path = polyline.getPath().Je;
-  var closest = getClosest(start, end);
+  var closest = await getClosest(start, end);
   path.forEach((pathCoord) => {
     closest.forEach((crimeCoord) => {
       if (getDistance(pathCoord, crimeCoord) < getCoordDiffFromMeters(100)) {
@@ -680,7 +680,7 @@ function getWaypoints(start, end) {
   return waypoints;
 }
 
-function getClosest() {
+async function getClosest(start, end) {
   let pts = [];
 
   const db = getFirestore();
@@ -710,8 +710,8 @@ function getClosest() {
 }
 
 function getDistance(a, b) {
-  int dx = Math.abs(a.lat - b.lat);
-  int dy = Math.abs(a.lng - b.lng);
+  var dx = Math.abs(a.lat - b.lat);
+  var dy = Math.abs(a.lng - b.lng);
   return Math.sqrt(dx * dx + dy * dy);
 }
 
