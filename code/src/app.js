@@ -42,6 +42,7 @@ const mapOptions = {
   center: { lat: 34.074949, lng: -118.441318 },
   mapId: "56e39613eced90d4",
   mapTypeControl: false,
+  fullscreenControl: false,
 };
 
 var querySnapshot;
@@ -95,7 +96,7 @@ function setRadius(radius) {
   heatmap.set("radius", radius);
 }
 function setOpacity(opacity) {
-  heatmap.set("opacity",opacity);
+  heatmap.set("opacity", opacity);
 }
 
 // <--- Listeners
@@ -124,34 +125,34 @@ async function initMap() {
   };
 
   document
-  .getElementById("toggle-markers").addEventListener('change', (event) => {
-    if (gotData === true) {
-      if (showingMarkers) {
-        hideMarkers();
+    .getElementById("toggle-markers").addEventListener('change', (event) => {
+      if (gotData === true) {
+        if (showingMarkers) {
+          hideMarkers();
+        } else {
+          showMarkers();
+        }
+        showingMarkers = !showingMarkers;
       } else {
-        showMarkers();
+        addMarkers();
+        showingMarkers = true;
       }
-      showingMarkers = !showingMarkers;
-    } else {
-      addMarkers();
-      showingMarkers = true;
-    }
-  })
- 
+    })
+
   document
-  .getElementById("toggle-heatmap").addEventListener('change', (event) => {
-    if (createdHeatmap) {
-      if (showingHeatmap) {
-        heatmap.setMap(null);
+    .getElementById("toggle-heatmap").addEventListener('change', (event) => {
+      if (createdHeatmap) {
+        if (showingHeatmap) {
+          heatmap.setMap(null);
+        } else {
+          heatmap.setMap(heatmap.getMap() ? null : map);
+        }
+        showingHeatmap = !showingHeatmap;
       } else {
-        heatmap.setMap(heatmap.getMap() ? null : map);
+        addHeatMap();
+        showingHeatmap = true;
       }
-      showingHeatmap = !showingHeatmap;
-    } else {
-      addHeatMap();
-      showingHeatmap = true;
-    }
-  })
+    })
   document.getElementById("tilt").addEventListener("click", setTilt);
 
   const inputOrigin = document.getElementById("origin");
@@ -236,7 +237,7 @@ function searchDirections(directionsService, directionsRenderer, service) {
       query: end,
       fields: ["name", "geometry"],
     };
-  
+
     service.findPlaceFromQuery(request, (results, status) => {
       if (status === google.maps.places.PlacesServiceStatus.OK && results) {
         for (let i = 0; i < results.length; i++) {
@@ -489,11 +490,15 @@ const searchBox = document.getElementById("searchBox"),
   searchIcon = document.getElementById("searchIcon"),
   hamburgerIcon = document.getElementById("hamburger"),
   dashContainer = document.getElementById("dashContainer"),
-  searchContainer = document.getElementById("searchContainer");
+  searchContainer = document.getElementById("searchContainer"),
+  directionsContainer = document.getElementById("directions");
 
 locationIcon.onclick = function () {
   searchBox.classList.toggle("active");
   searchContainer.classList.toggle("grey");
+  if (directionsContainer.classList.contains("active")) {
+    directionsContainer.classList.toggle("active")
+  }
 };
 
 searchIcon.onclick = function () {
@@ -501,9 +506,11 @@ searchIcon.onclick = function () {
     searchBox.classList.toggle("active");
     searchContainer.classList.toggle("grey")
   }
+  directionsContainer.classList.toggle("active");
 };
 
 hamburgerIcon.onclick = function () {
   dashContainer.classList.toggle("active");
   searchContainer.classList.toggle("adjust");
+  directionsContainer.classList.toggle("adjust");
 };
