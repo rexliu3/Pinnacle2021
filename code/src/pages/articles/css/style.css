@@ -12,6 +12,31 @@
  * Licensed under MIT (https://github.com/twbs/bootstrap/blob/master/LICENSE)
  */
 /*! normalize.css v3.0.3 | MIT License | github.com/necolas/normalize.css */
+#back {
+	background-color: Transparent;
+	background-repeat:no-repeat;
+	border: none;
+	cursor:pointer;
+	overflow: hidden;
+	outline:none;
+	position: absolute;
+	top: 50px;
+	left: 50px;
+	color: white;
+	display: flex;
+	justify-content: center;
+	align-items: center;
+	cursor: pointer;
+	width: 100px;
+	height: 100px;
+	background: rgb(0,80,134);
+	background: linear-gradient(135deg, rgba(0,80,134,1) 0%, rgba(176,202,199,1) 100%);
+	font-size: 40px;
+	border-radius: 50px;
+	box-shadow: 6px 6px 10px -1px rgba(0, 0, 0, 0.15),
+	-6px -6px 10px -1px rgba(255, 255, 255, 0.7);
+  }
+
 html {
   font-family: sans-serif;
   -ms-text-size-adjust: 100%;
@@ -7700,6 +7725,7 @@ h1, h2, h3, h4, h5, h6 {
   padding: 20px;
   float: left;
   line-height: 24px;
+  color: black;
 }
 #fh5co-board .item .fh5co-item-title {
   font-family: "Montserrat", arial, sans-serif;
