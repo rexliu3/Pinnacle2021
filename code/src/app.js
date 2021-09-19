@@ -21,13 +21,13 @@ import { initializeApp } from "firebase/app";
 import { getFirestore, collection, getDocs, addDoc } from "firebase/firestore";
 
 const firebaseApp = initializeApp({
-  apiKey: "AIzaSyAKCq1SUzj0i04KPVEpklcj_z8aAGhQBT0",
-  authDomain: "pinnacle2021v4.firebaseapp.com",
-  projectId: "pinnacle2021v4",
-  storageBucket: "pinnacle2021v4.appspot.com",
-  messagingSenderId: "927228990437",
-  appId: "1:927228990437:web:61ad34549e478a2396550c",
-  measurementId: "G-YJ69QCE5WF"
+  apiKey: "AIzaSyA6YPYe0rFLvarGDEGbUdFfIXIKAwwHRgA",
+  authDomain: "pinnacle2021v5.firebaseapp.com",
+  projectId: "pinnacle2021v5",
+  storageBucket: "pinnacle2021v5.appspot.com",
+  messagingSenderId: "828758736921",
+  appId: "1:828758736921:web:0fee74be368c6adcedea88",
+  measurementId: "G-10YQ1MREYN"
 });
 
 const apiOptions = {
@@ -41,13 +41,14 @@ const mapOptions = {
   tilt: 40,
   heading: 0,
   zoom: 18,
-  center: { lat: 34.074949, lng: -118.441318 },
+  center: { lat: 34.070049, lng: -118.439741 },
   mapId: "56e39613eced90d4",
   mapTypeControl: false,
   fullscreenControl: false,
 };
 
 var svgMarker;
+var image;
 
 var querySnapshot;
 var map, heatmap;
@@ -123,7 +124,17 @@ async function initMap() {
     strokeWeight: 0,
     rotation: 0,
     scale: 1,
-    translation: 10
+    anchor: new google.maps.Point(0, 35),
+  };
+
+  image = {
+    url: "./assets/car.png",
+    // This marker is 20 pixels wide by 32 pixels high.
+    size: new google.maps.Size(20, 32),
+    // The origin for this image is (0, 0).
+    origin: new google.maps.Point(0, 0),
+    // The anchor for this image is the base of the flagpole at (0, 32).
+    anchor: new google.maps.Point(0, 32),
   };
 
   var directionsService = new google.maps.DirectionsService();
@@ -370,7 +381,7 @@ async function addMarkers() {
         const marker = new google.maps.Marker({
           position: { lat: doc.data().latitude, lng: doc.data().longitude },
           map,
-          icon: svgMarker,
+          icon: image,
           title: capitalizeFirstLetter(doc.data().offense),
         });
 
