@@ -31,14 +31,14 @@ import { getFirestore, collection, getDocs, addDoc } from "firebase/firestore";
 });*/
 
 const firebaseApp = initializeApp({
-  apiKey: "AIzaSyCCIRqwUzPlJig54rYq9ZTrBWKIcK8XPZU",
-  authDomain: "pinnacle2021v6-39c7d.firebaseapp.com",
-  projectId: "pinnacle2021v6-39c7d",
-  storageBucket: "pinnacle2021v6-39c7d.appspot.com",
-  messagingSenderId: "190205685765",
-  appId: "1:190205685765:web:8c6ccd2c9c2f56295a6c6c",
-  measurementId: "G-6JH8238L0P"
-});
+  apiKey: "AIzaSyDtxnvVm5xzuZnK8Xco7HliIEEbJ7AH78k",
+  authDomain: "pinnacle2021v7.firebaseapp.com",
+  projectId: "pinnacle2021v7",
+  storageBucket: "pinnacle2021v7.appspot.com",
+  messagingSenderId: "775863602352",
+  appId: "1:775863602352:web:7bd0ca25c090262b2c7f75",
+  measurementId: "G-ZHX7TCR4H0"
+})
 
 
 const apiOptions = {
