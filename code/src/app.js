@@ -568,7 +568,7 @@ function initWebglOverlayView(map) {
         // rotate the map 360 degrees
         if (mapOptions.tilt < 67.5) {
           mapOptions.tilt += 0.5;
-        } else if (mapOptions.heading <= 360) {
+        } else if (mapOptions.heading <= 5) {
           mapOptions.heading += 0.2;
           mapOptions.zoom -= 0.0005;
         } else {
