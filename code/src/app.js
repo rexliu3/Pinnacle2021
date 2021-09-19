@@ -680,6 +680,35 @@ function getWaypoints(start, end) {
   return waypoints;
 }
 
+function getClosest() {
+  let pts = [];
+
+  const db = getFirestore();
+  querySnapshot = await getDocs(collection(db, "fbi"));
+  querySnapshot.forEach((doc) => {
+    let pt = { 
+      lat: doc.data().latitude, 
+      lng: doc.data().longitude 
+    };
+
+    // Filter for closest points
+    if (pts.length === 0) {
+      pts.push(pt);
+    } else {
+      for (let i = 0; i < pts.length; i++) {
+        if (pathDistanceFromOptimal(pt) < pathDistanceFromOptimal(pts[i])) {
+          pts.splice(i, 0, pt);
+          break;
+        }
+      }
+    }
+    if (pts.length > 20) {
+      pts.pop();
+    }
+  });
+  return pts;
+}
+
 function getDistance(a, b) {
   int dx = Math.abs(a.lat - b.lat);
   int dy = Math.abs(a.lng - b.lng);
