@@ -131,9 +131,9 @@ async function initMap() {
   };
 
   symbol = {
-    path: google.maps.SymbolPath.FORWARD_CLOSED_ARROW	,
-    scale: 5,
-    strokeColor: "#393",
+    path: google.maps.SymbolPath.CIRCLE	,
+    scale: 8,
+    strokeColor: "#005086",
   };
 
   var directionsService = new google.maps.DirectionsService();
