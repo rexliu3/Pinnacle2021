@@ -578,28 +578,32 @@ async function onReportSubmit() {
   }
 }
 
-// PATHFINDING ALG
+/*
+ * Pathfinding algorithm
+ */
+
+// Consts
 const GM_API_KEY = "AIzaSyA3ACCckrmeyEyl2ZUw72B3dU3UGlCuQCE";
 const HERE_API_KEY = "yGODsdk71n9nsLYjU8SOmBh4iZpKUdCVI5yFeFKGufc";
 const CRIME_RADIUS_METERS = 1000;
 const CRIME_RADIUS = (CRIME_RADIUS_METERS / 6378000) * (180 / 3.14);
-var path;
 
 // Returns list of waypoints along route from start to end.
 async function getRoute(start, end) {
+
+  // Takes in address/name of pace, get object with latitude and longitude
   let getCoordinatesFromName = async (address) => {
-    path = `https://maps.googleapis.com/maps/api/geocode/json?address=${address}&key=${GM_API_KEY}`;
+    let path = `https://maps.googleapis.com/maps/api/geocode/json?address=${address}&key=${GM_API_KEY}`;
     return axios.get(path).then((res) => res.data.results[0].geometry.location);
   };
 
+  // Asyncs
   let startCoord = await getCoordinatesFromName(start);
   let endCoord = await getCoordinatesFromName(end);
   let avoidAreaString = await getAvoidAreaString(startCoord, startCoord);
 
-  path = `https://route.ls.hereapi.com/routing/7.2/calculateroute.json?apiKey=${HERE_API_KEY}&waypoint0=geo!${
-    startCoord.lat
-  },${startCoord.lng}&waypoint1=geo!${endCoord.lat},${
-    endCoord.lng
+  let path = `https://route.ls.hereapi.com/routing/7.2/calculateroute.json?apiKey=${HERE_API_KEY}&waypoint0=geo!${
+    startCoord.lat},${startCoord.lng}&waypoint1=geo!${endCoord.lat},${endCoord.lng
   }&mode=fastest;pedestrian;traffic:disabled&avoidareas=${avoidAreaString}`;
 
   return axios
@@ -616,10 +620,41 @@ async function getRoute(start, end) {
           stopover: false
         });
       }
-      console.log("WHY ISNT THIS WORKING");
-      console.log(waypoints);
-      console.log("WHY ISNT THIS WORKING v2");
-      console.log(res);
+      return res;
+    });
+}
+
+// Returns list of waypoints along route from start to end.
+async function getRouteNoObstacles(start, end) {
+
+  // Takes in address/name of pace, get object with latitude and longitude
+  let getCoordinatesFromName = async (address) => {
+    let path = `https://maps.googleapis.com/maps/api/geocode/json?address=${address}&key=${GM_API_KEY}`;
+    return axios.get(path).then((res) => res.data.results[0].geometry.location);
+  };
+
+  // Asyncs
+  let startCoord = await getCoordinatesFromName(start);
+  let endCoord = await getCoordinatesFromName(end);
+
+  let path = `https://route.ls.hereapi.com/routing/7.2/calculateroute.json?apiKey=${HERE_API_KEY}&waypoint0=geo!${
+    startCoord.lat},${startCoord.lng}&waypoint1=geo!${endCoord.lat},${endCoord.lng
+  }&mode=fastest;pedestrian;traffic:disabled`;
+
+  return axios
+    .get(path)
+    .then((res) => res.data.response.route[0].waypoint)
+    .then((waypoints) => {
+      let res = [];
+      for (let w of waypoints) {
+        res.push({
+          location: {
+            lat: w.originalPosition.latitude,
+            lng: w.originalPosition.longitude,
+          },
+          stopover: false
+        });
+      }
       return res;
     });
 }
@@ -638,14 +673,39 @@ async function getAvoidAreaString(start, end) {
   };
 
   // Return distance of point pt from fastest path.
-  let pathDistanceFromCenter = (pt) => {
-    let center = {
-      lat: (start.latitude + end.latitude) / 2,
-      lng: (start.longitude + end.longitude) / 2
-    };
-    let dx = Math.abs(center.lat - pt.lat);
-    let dy = Math.abs(center.lng - pt.lng);
-    return dx * dx + dy * dy;
+  // Source: wikipedia LMAO
+  let pathDistanceFromOptimal = (pt) => {
+    let x0 = pt.lat, y0 = pt.lng;
+    let x1 = start.latitude, y1 = start.longitude;
+    let x2 = end.latitude, y2 = end.longitude;
+
+    var A = x0 - x1;
+    var B = y0 - y1;
+    var C = x2 - x1;
+    var D = y2 - y1;
+
+    var dot = A * C + B * D;
+    var len_sq = C * C + D * D;
+    var param = -1;
+    if (len_sq != 0) // in case of 0 length line
+        param = dot / len_sq;
+
+    var xx, yy;
+
+    if (param < 0) {
+      xx = x1;
+      yy = y1;
+    } else if (param > 1) {
+      xx = x2;
+      yy = y2;
+    } else {
+      xx = x1 + param * C;
+      yy = y1 + param * D;
+    }
+
+    var dx = x0 - xx;
+    var dy = y0 - yy;
+    return Math.sqrt(dx * dx + dy * dy);
   };
 
   let res = "";
@@ -658,11 +718,13 @@ async function getAvoidAreaString(start, end) {
       lat: doc.data().latitude, 
       lng: doc.data().longitude 
     };
+
+    // Filter for closest points
     if (pts.length === 0) {
       pts.push(pt);
     } else {
       for (let i = 0; i < pts.length; i++) {
-        if (pathDistanceFromCenter(pt) < pathDistanceFromCenter(pts[i])) {
+        if (pathDistanceFromOptimal(pt) < pathDistanceFromOptimal(pts[i])) {
           pts.splice(i, 0, pt);
           break;
         }
@@ -673,21 +735,11 @@ async function getAvoidAreaString(start, end) {
     }
   });
 
-  console.log(pts);
-  for (let pt of pts) {
+  for (let pt of pts) 
     res += getBoxAroundAvoidCoord(pt);
-  }
 
-  // remove last exclamation for formatting
+  // Remove last exclamation for formatting
   if (res[res.length - 1] == "!") 
     res = res.substring(0, res.length - 1);
   return res;
 }
-
-/* [
-  {latitude: 25l25, longitude: 252525},
-  {latitude: 25l25, longitude: 252525},
-  {latitude: 25l25, longitude: 252525},
-]
-
-*/
