@@ -597,7 +597,10 @@ async function getRoute(start, end) {
       let res = [];
       for (let w of waypoints) {
         res.push({
-          location: w.originalPosition,
+          location: {
+            lat: w.originalPosition.latitude,
+            lng: w.originalPosition.longitude,
+          },
           stopover: false
         });
       }
@@ -625,16 +628,12 @@ async function getAvoidAreaString(start, end) {
 
   const db = getFirestore();
   querySnapshot = await getDocs(collection(db, "fbi"));
-  querySnapshot
-    .forEach((doc) => {
-      pts.push({
-      lat: doc.data().latitude, lng: doc.data().longitude
+  querySnapshot .forEach((doc) => {
+    pts.push({ 
+      lat: doc.data().latitude, 
+      lng: doc.data().longitude 
     });
-      // res += getBoxAroundAvoidCoord({
-      //   lat: doc.data().latitude,
-      //   lng: doc.data().longitude,
-      // });
-    })
+  })
   // remove last exclamation for formatting
   while (pts.length > 15) pts.pop();
   console.log(pts);
