@@ -21,13 +21,13 @@ import { initializeApp } from "firebase/app";
 import { getFirestore, collection, getDocs, addDoc } from "firebase/firestore";
 
 const firebaseApp = initializeApp({
-  apiKey: "AIzaSyAtUzlPU092tOueMSllqW_9KOVqnIwh5SI",
-  authDomain: "pinnacle2021v3.firebaseapp.com",
-  projectId: "pinnacle2021v3",
-  storageBucket: "pinnacle2021v3.appspot.com",
-  messagingSenderId: "373427084088",
-  appId: "1:373427084088:web:4bd04036f9bd1e2fb6bfcd",
-  measurementId: "G-K4NXH6S9QX",
+  apiKey: "AIzaSyAKCq1SUzj0i04KPVEpklcj_z8aAGhQBT0",
+  authDomain: "pinnacle2021v4.firebaseapp.com",
+  projectId: "pinnacle2021v4",
+  storageBucket: "pinnacle2021v4.appspot.com",
+  messagingSenderId: "927228990437",
+  appId: "1:927228990437:web:61ad34549e478a2396550c",
+  measurementId: "G-YJ69QCE5WF"
 });
 
 const apiOptions = {
@@ -595,7 +595,10 @@ async function getRoute(start, end) {
       let res = [];
       for (let w of waypoints) {
         res.push({
-          location: w.originalPosition,
+          location: {
+            lat: w.originalPosition.latitude,
+            lng: w.originalPosition.longitude,
+          },
           stopover: false
         });
       }
@@ -623,16 +626,12 @@ async function getAvoidAreaString(start, end) {
 
   const db = getFirestore();
   querySnapshot = await getDocs(collection(db, "fbi"));
-  querySnapshot
-    .forEach((doc) => {
-      pts.push({
-      lat: doc.data().latitude, lng: doc.data().longitude
+  querySnapshot .forEach((doc) => {
+    pts.push({ 
+      lat: doc.data().latitude, 
+      lng: doc.data().longitude 
     });
-      // res += getBoxAroundAvoidCoord({
-      //   lat: doc.data().latitude,
-      //   lng: doc.data().longitude,
-      // });
-    })
+  })
   // remove last exclamation for formatting
   while (pts.length > 15) pts.pop();
   console.log(pts);
