@@ -52,9 +52,8 @@ const mapOptions = {
   tilt: 40,
   heading: 0,
   zoom: 18,
-  center: { lat: 34.070049, lng: -118.439741 },
+  center: { lat: 34.074949, lng: -118.441318 },
   mapId: "56e39613eced90d4",
-  zoomControl: true,
   mapTypeControl: false,
   scaleControl: true,
   streetViewControl: true,
@@ -63,8 +62,6 @@ const mapOptions = {
 };
 
 var svgMarker;
-var image;
-var polyline;
 
 var querySnapshot;
 var map, heatmap;
@@ -73,8 +70,6 @@ var createdMarkers = false;
 var showingMarkers = false;
 var showingHeatmap = false;
 var markers = [];
-
-var symbol;
 
 // <--- Helper Functions
 function capitalizeFirstLetter(string) {
@@ -257,19 +252,6 @@ async function initMap() {
   return map;
 }
 
-function animateCircle(line) {
-  let count = 0;
-
-  window.setInterval(() => {
-    count = (count + 0.2) % 200;
-
-    const icons = line.get("icons");
-
-    icons[0].offset = count / 2 + "%";
-    line.set("icons", icons);
-  }, 20);
-}
-
 // Search fastest path directions
 async function searchDirections(
   directionsService,
@@ -312,8 +294,8 @@ async function searchDirections(
   if (start !== "" && end !== "") {
     directionsRenderer.setMap(map);
     directionsRenderer.setPanel(document.getElementById("directionsPanel"));
-
-    var pts = await getRoute(start, end).then((res) => res);
+    
+    var pts = await getWaypoints(start, end).then((res) => res);
 
     var request = {
       origin: start,
@@ -476,7 +458,7 @@ async function addMarkers() {
         const marker = new google.maps.Marker({
           position: { lat: doc.data().latitude, lng: doc.data().longitude },
           map,
-          icon: image,
+          icon: svgMarker,
           title: capitalizeFirstLetter(doc.data().offense),
         });
 
@@ -694,6 +676,10 @@ const HERE_API_KEY = "yGODsdk71n9nsLYjU8SOmBh4iZpKUdCVI5yFeFKGufc";
 const CRIME_RADIUS_METERS = 100;
 const CRIME_RADIUS = (CRIME_RADIUS_METERS / 6378000) * (180 / 3.14);
 
+function getCoordDiffFromMeters(meters) {
+  return (meters / 6378000) * (180 / 3.14);
+}
+
 // Returns list of waypoints along route from start to end.
 async function getRoute(start, end) {
   // Takes in address/name of pace, get object with latitude and longitude
@@ -759,6 +745,29 @@ async function getRouteNoObstacles(start, end) {
       }
       return res;
     });
+}
+
+function getWaypoints(start, end) {
+  var waypoints = [];
+  var path = polyline.getPath().Je;
+  var closest = getClosest(start, end);
+  path.forEach((pathCoord) => {
+    closest.forEach((crimeCoord) => {
+      if (getDistance(pathCoord, crimeCoord) < getCoordDiffFromMeters(100)) {
+        waypoints.push({
+          lat: pathCoord.lat + getCoordDiffFromMeters(100),
+          lng: pathCoord.lng + getCoordDiffFromMeters(100)
+        });
+      }
+    });
+  });
+  return waypoints;
+}
+
+function getDistance(a, b) {
+  int dx = Math.abs(a.lat - b.lat);
+  int dy = Math.abs(a.lng - b.lng);
+  return Math.sqrt(dx * dx + dy * dy);
 }
 
 // Returns areas to avoid in string format
