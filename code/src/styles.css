@@ -463,3 +463,11 @@ a {
 .adjust #directionsPanel {
   left: 340px;
 }
+
+.logopng {
+  position: absolute;
+  width: 17%;
+  height: 8.6%;
+  top: 37px;
+  right: 50px;
+}
