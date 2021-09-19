@@ -44,11 +44,12 @@ const mapOptions = {
   center: { lat: 34.070049, lng: -118.439741 },
   mapId: "56e39613eced90d4",
   zoomControl: true,
-  mapTypeControl: true,
+  mapTypeControl: false,
   scaleControl: true,
-  streetViewControl: false,
+  streetViewControl: true,
   rotateControl: true,
-  fullscreenControl: true
+  fullscreenControl: true,
+
 };
 
 var svgMarker;
