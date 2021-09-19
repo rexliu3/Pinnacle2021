@@ -580,7 +580,7 @@ async function getRoute(start, end) {
 
   let startCoord = await getCoordinatesFromName(start);
   let endCoord = await getCoordinatesFromName(end);
-  let avoidAreaString = await getAvoidAreaString(start, end);
+  let avoidAreaString = await getAvoidAreaString(startCoord, startCoord);
 
   path = `https://route.ls.hereapi.com/routing/7.2/calculateroute.json?apiKey=${HERE_API_KEY}&waypoint0=geo!${
     startCoord.lat
@@ -612,6 +612,8 @@ async function getRoute(start, end) {
 
 // Returns areas to avoid in string format
 async function getAvoidAreaString(start, end) {
+
+  // Draw box around a coordinate in order to avoid area.
   let getBoxAroundAvoidCoord = (coord) => {
     let res = "";
     res += (parseFloat(coord.lat) + CRIME_RADIUS).toString() + ",";
@@ -621,24 +623,49 @@ async function getAvoidAreaString(start, end) {
     return res;
   };
 
+  // Return distance of point pt from fastest path.
+  let pathDistanceFromCenter = (pt) => {
+    let center = {
+      lat: (start.latitude + end.latitude) / 2,
+      lng: (start.longitude + end.longitude) / 2
+    };
+    let dx = Math.abs(center.lat - pt.lat);
+    let dy = Math.abs(center.lng - pt.lng);
+    return dx * dx + dy * dy;
+  };
+
   let res = "";
   let pts = [];
 
   const db = getFirestore();
   querySnapshot = await getDocs(collection(db, "fbi"));
-  querySnapshot .forEach((doc) => {
-    pts.push({ 
+  querySnapshot.forEach((doc) => {
+    let pt = { 
       lat: doc.data().latitude, 
       lng: doc.data().longitude 
-    });
-  })
-  // remove last exclamation for formatting
-  while (pts.length > 15) pts.pop();
+    };
+    if (pts.length === 0) {
+      pts.push(pt);
+    } else {
+      for (let i = 0; i < pts.length; i++) {
+        if (pathDistanceFromCenter(pt) < pathDistanceFromCenter(pts[i])) {
+          pts.splice(i, 0, pt);
+          break;
+        }
+      }
+    }
+    if (pts.length > 20) {
+      pts.pop();
+    }
+  });
+
+  // Get top 20 closest points to path
   console.log(pts);
   for (let pt of pts) {
     res += getBoxAroundAvoidCoord(pt);
   }
 
+  // remove last exclamation for formatting
   if (res[res.length - 1] == "!") 
     res = res.substring(0, res.length - 1);
   return res;
