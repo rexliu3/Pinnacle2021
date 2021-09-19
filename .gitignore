@@ -3,3 +3,7 @@ node_modules
 /backend/node_modules
 /backend/script.py
 /backend/test.py
+<<<<<<< HEAD
+=======
+/backend/backend.py
+>>>>>>> 7d2cd267b6b0bf1297aa83a8b40779a6dc0215cb
