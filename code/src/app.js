@@ -43,8 +43,12 @@ const mapOptions = {
   zoom: 18,
   center: { lat: 34.070049, lng: -118.439741 },
   mapId: "56e39613eced90d4",
-  mapTypeControl: false,
-  fullscreenControl: false,
+  zoomControl: true,
+  mapTypeControl: true,
+  scaleControl: true,
+  streetViewControl: false,
+  rotateControl: true,
+  fullscreenControl: true
 };
 
 var svgMarker;
@@ -563,7 +567,7 @@ function initWebglOverlayView(map) {
         // rotate the map 360 degrees
         if (mapOptions.tilt < 67.5) {
           mapOptions.tilt += 0.5;
-        } else if (mapOptions.heading <= 5) {
+        } else if (mapOptions.heading <= 360) {
           mapOptions.heading += 0.2;
           mapOptions.zoom -= 0.0005;
         } else {
