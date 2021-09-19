@@ -53,7 +53,7 @@ body {
   left: 316px;
 }
 
-#searchBox {
+.searchBox {
   border-radius: 50px;  
   padding: 27px;
   background: rgb(0,80,134);
@@ -69,17 +69,17 @@ body {
   transition: 0.5s;
 }
 
-#searchBox:hover {
+.searchBox:hover {
   background: rgb(0,80,134);
   background: linear-gradient(135deg, rgba(0,80,134,1) 0%, rgba(176,202,199,1) 100%);
 }
 
-.grey #searchBox {
+.grey .searchBox {
   background: rgb(0,80,134);
   background: linear-gradient(135deg, rgba(0,80,134,1) 0%, rgba(176,202,199,1) 100%);
 }
 
-.grey #searchBox:hover {
+.grey .searchBox:hover {
   background: rgb(0,80,134);
   background: linear-gradient(135deg, rgba(0,80,134,1) 0%, rgba(176,202,199,1) 100%);
 }
@@ -116,6 +116,11 @@ body {
   padding-bottom: 8px;
   height: fit-content;  
   color: white;
+}
+
+#origin, #destination {
+  position: relative;
+  bottom: 7.5px;
 }
 
 .locate::placeholder {
@@ -470,4 +475,64 @@ a {
   height: 8.6%;
   top: 37px;
   right: 50px;
+}
+
+#phoneContainer {
+  position: absolute;
+  top: 132px;
+  display: flex;
+  justify-content: center;
+  
+}
+
+#phoneBox {
+  opacity: 0;
+}
+
+.show #phoneBox {
+  opacity: 100;
+}
+
+.adjust #phoneBox {
+  left: 316px;
+}
+
+#phoneIcon {
+  font-size: 35px;
+  color: white;
+  cursor: pointer;
+  position: relative;
+  left: 12px;
+  
+}
+
+#phone {
+  position: relative;
+  top: 10px;
+  font-size: 16px;
+  font-family: 'Comfortaa';
+  width: 300px;
+  background: transparent;
+  outline: none;
+  transition: 1.5s;
+  border-bottom: 2px;
+  border-color: transparent;
+  border-style: solid;
+  padding-bottom: 8px;
+  height: fit-content;  
+  color: white;   
+  border-bottom: 2px;
+  border-color: white;
+  border-style: solid;
+  margin-right: -10px;
+}
+
+.active #phone {
+  width: 0px;
+}
+
+#checkIcon {
+  font-size: 42px;
+  color: white;
+  cursor: pointer;
 }

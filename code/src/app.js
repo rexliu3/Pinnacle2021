@@ -631,13 +631,19 @@ const searchBox = document.getElementById("searchBox"),
   hamburgerIcon = document.getElementById("hamburger"),
   dashContainer = document.getElementById("dashContainer"),
   searchContainer = document.getElementById("searchContainer"),
-  directionsContainer = document.getElementById("directions");
+  directionsContainer = document.getElementById("directions"),
+  phoneContainer = document.getElementById("phoneContainer"),
+  phoneIcon = document.getElementById("phoneIcon"),
+  checkIcon = document.getElementById("checkIcon");
 
 locationIcon.onclick = function () {
   searchBox.classList.toggle("active");
   searchContainer.classList.toggle("grey");
   if (directionsContainer.classList.contains("active")) {
     directionsContainer.classList.toggle("active");
+  }
+  if (phoneContainer.classList.contains("show")) {
+    phoneContainer.classList.toggle("show")
   }
 };
 
@@ -647,13 +653,25 @@ searchIcon.onclick = function () {
     searchContainer.classList.toggle("grey");
   }
   directionsContainer.classList.toggle("active");
+  phoneContainer.classList.toggle("show");
 };
 
 hamburgerIcon.onclick = function () {
   dashContainer.classList.toggle("active");
   searchContainer.classList.toggle("adjust");
   directionsContainer.classList.toggle("adjust");
+  phoneContainer.classList.toggle("adjust")
 };
+
+phoneIcon.onclick = function () {
+  phoneContainer.classList.toggle("active")
+}
+
+checkIcon.onclick = function () {
+  phoneContainer.classList.toggle("show")
+  console.log('hi')
+  console.log(axios.get('http://127.0.0.1:5000/'));
+}
 
 async function onReportSubmit() {
   var crimeCategory = document.getElementById("crimeCategory").value;
