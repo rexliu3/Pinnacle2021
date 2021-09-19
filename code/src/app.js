@@ -31,13 +31,13 @@ import { getFirestore, collection, getDocs, addDoc } from "firebase/firestore";
 });*/
 
 const firebaseApp = initializeApp({
-  apiKey: "AIzaSyAtUzlPU092tOueMSllqW_9KOVqnIwh5SI",
-  authDomain: "pinnacle2021v3.firebaseapp.com",
-  projectId: "pinnacle2021v3",
-  storageBucket: "pinnacle2021v3.appspot.com",
-  messagingSenderId: "373427084088",
-  appId: "1:373427084088:web:4bd04036f9bd1e2fb6bfcd",
-  measurementId: "G-K4NXH6S9QX"
+  apiKey: "AIzaSyCCIRqwUzPlJig54rYq9ZTrBWKIcK8XPZU",
+  authDomain: "pinnacle2021v6-39c7d.firebaseapp.com",
+  projectId: "pinnacle2021v6-39c7d",
+  storageBucket: "pinnacle2021v6-39c7d.appspot.com",
+  messagingSenderId: "190205685765",
+  appId: "1:190205685765:web:8c6ccd2c9c2f56295a6c6c",
+  measurementId: "G-6JH8238L0P"
 });
 
 
@@ -64,6 +64,7 @@ const mapOptions = {
 var svgMarker;
 var symbol;
 var polyline;
+var image;
 
 var querySnapshot;
 var map, heatmap;
@@ -149,6 +150,7 @@ async function initMap() {
   };
 
   var directionsService = new google.maps.DirectionsService();
+  var testDirectionsService = new google.maps.DirectionsService();
   var directionsRenderer = new google.maps.DirectionsRenderer({
     draggable: true,
     map,
@@ -157,7 +159,7 @@ async function initMap() {
   var element = document.getElementById("searchButton");
   var service = new google.maps.places.PlacesService(map);
   element.onclick = async function (event) {
-    await searchDirections(directionsService, directionsRenderer, service);
+    await searchDirections(directionsService, testDirectionsService, directionsRenderer, service);
   };
 
   document
@@ -254,9 +256,23 @@ async function initMap() {
   return map;
 }
 
+function animateCircle(line) {
+  let count = 0;
+
+  window.setInterval(() => {
+    count = (count + 0.2) % 200;
+
+    const icons = line.get("icons");
+
+    icons[0].offset = count / 2 + "%";
+    line.set("icons", icons);
+  }, 20);
+}
+
 // Search fastest path directions
 async function searchDirections(
   directionsService,
+  testDirectionsService,
   directionsRenderer,
   service
 ) {
@@ -304,52 +320,30 @@ async function searchDirections(
       travelMode: "WALKING",
     };
 
-    directionsService.route(request, async function (response, status) {
+    var pathsThing = [];
+    testDirectionsService.route(request, function (response, status) {
       if (status == "OK") {
-        polyline = new google.maps.Polyline({
-          path: [],
-          strokeColor: "#0000FF",
-          strokeWeight: 3,
-          icons: [
-            {
-              icon: symbol,
-              offset: "100%",
-            },
-          ],
-        });
-        var bounds = new google.maps.LatLngBounds();
-
         var legs = response.routes[0].legs;
         for (let i = 0; i < legs.length; i++) {
           var steps = legs[i].steps;
           for (let j = 0; j < steps.length; j++) {
             var nextSegment = steps[j].path;
             for (let k = 0; k < nextSegment.length; k++) {
-              polyline.getPath().push(nextSegment[k]);
-              bounds.extend(nextSegment[k]);
+              pathsThing.push(nextSegment[k]);
             }
           }
         }
-        polyline.setMap(map);
-        directionsRenderer.setDirections(response);
-      }
-    });
+    }});
+    var pts = await getWaypoints(start, end, pathsThing);
 
-
-
-
-
-    
-    var pts = await getWaypoints(start, end);
-
-    var request = {
+    request = {
       origin: start,
       destination: end,
       travelMode: "WALKING",
       waypoints: pts,
     };
 
-    directionsService.route(request, async function (response, status) {
+    directionsService.route(request, function (response, status) {
       if (status == "OK") {
         polyline = new google.maps.Polyline({
           path: [],
@@ -376,10 +370,7 @@ async function searchDirections(
           }
         }
         polyline.setMap(map);
-
         directionsRenderer.setDirections(response);
-        console.log(polyline.getPath().Je);
-
         animateCircle(polyline);
       }
     });
@@ -503,7 +494,7 @@ async function addMarkers() {
         const marker = new google.maps.Marker({
           position: { lat: doc.data().latitude, lng: doc.data().longitude },
           map,
-          icon: svgMarker,
+          icon: image,
           title: capitalizeFirstLetter(doc.data().offense),
         });
 
@@ -792,20 +783,29 @@ async function getRouteNoObstacles(start, end) {
     });
 }
 
-async function getWaypoints(start, end) {
+async function getWaypoints(start, end, path) {
   var waypoints = [];
-  var path = polyline.getPath().Je;
   var closest = await getClosest(start, end);
+  console.log(path)
+  
   path.forEach((pathCoord) => {
     closest.forEach((crimeCoord) => {
-      if (getDistance(pathCoord, crimeCoord) < getCoordDiffFromMeters(100)) {
+      let distance = getDistance(pathCoord, crimeCoord) 
+      console.log(distance, getCoordDiffFromMeters(500));
+
+      if (distance < 0.1) {
         waypoints.push({
-          lat: pathCoord.lat + getCoordDiffFromMeters(100),
-          lng: pathCoord.lng + getCoordDiffFromMeters(100)
+          location: new google.maps.LatLng(pathCoord.lat + getCoordDiffFromMeters(500), pathCoord.lng + getCoordDiffFromMeters(500)),
+          stopover: false,
         });
       }
     });
   });
+
+  while (waypoints.length > 5) {
+    waypoints.pop();
+  }
+
   return waypoints;
 }
 
@@ -825,7 +825,7 @@ async function getClosest(start, end) {
       pts.push(pt);
     } else {
       for (let i = 0; i < pts.length; i++) {
-        if (pathDistanceFromOptimal(pt) < pathDistanceFromOptimal(pts[i])) {
+        if (pathDistanceFromOptimal(start, end, pt) < pathDistanceFromOptimal(start, end, pts[i])) {
           pts.splice(i, 0, pt);
           break;
         }
@@ -839,26 +839,15 @@ async function getClosest(start, end) {
 }
 
 function getDistance(a, b) {
-  var dx = Math.abs(a.lat - b.lat);
-  var dy = Math.abs(a.lng - b.lng);
+  var dx = Math.abs(a.lat() - b.lat);
+  var dy = Math.abs(a.lng() - b.lng);
+
   return Math.sqrt(dx * dx + dy * dy);
 }
 
-// Returns areas to avoid in string format
-async function getAvoidAreaString(start, end) {
-  // Draw box around a coordinate in order to avoid area.
-  let getBoxAroundAvoidCoord = (coord) => {
-    let res = "";
-    res += (parseFloat(coord.lat) + CRIME_RADIUS).toString() + ",";
-    res += (parseFloat(coord.lng) - CRIME_RADIUS).toString() + ";";
-    res += (parseFloat(coord.lat) - CRIME_RADIUS).toString() + ",";
-    res += (parseFloat(coord.lng) + CRIME_RADIUS).toString() + "!";
-    return res;
-  };
-
   // Return distance of point pt from fastest path.
   // Source: wikipedia LMAO
-  let pathDistanceFromOptimal = (pt) => {
+  function pathDistanceFromOptimal(start, end, pt) {
     let x0 = pt.lat,
       y0 = pt.lng;
     let x1 = start.latitude,
@@ -894,6 +883,18 @@ async function getAvoidAreaString(start, end) {
     var dx = x0 - xx;
     var dy = y0 - yy;
     return Math.sqrt(dx * dx + dy * dy);
+  };
+
+// Returns areas to avoid in string format
+async function getAvoidAreaString(start, end) {
+  // Draw box around a coordinate in order to avoid area.
+  let getBoxAroundAvoidCoord = (coord) => {
+    let res = "";
+    res += (parseFloat(coord.lat) + CRIME_RADIUS).toString() + ",";
+    res += (parseFloat(coord.lng) - CRIME_RADIUS).toString() + ";";
+    res += (parseFloat(coord.lat) - CRIME_RADIUS).toString() + ",";
+    res += (parseFloat(coord.lng) + CRIME_RADIUS).toString() + "!";
+    return res;
   };
 
   let res = "";
