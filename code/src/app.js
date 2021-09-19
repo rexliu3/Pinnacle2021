@@ -13,6 +13,7 @@
 // limitations under the License.
 
 import { Loader } from "@googlemaps/js-api-loader";
+import axios from "axios";
 import * as THREE from "three";
 import { GLTFLoader } from "three/examples/jsm/loaders/GLTFLoader.js";
 import { initializeApp } from "firebase/app";
@@ -507,3 +508,68 @@ hamburgerIcon.onclick = function () {
   dashContainer.classList.toggle("active");
   searchContainer.classList.toggle("adjust");
 };
+
+// PATHFINDING ALG
+const GM_API_KEY = "AIzaSyA3ACCckrmeyEyl2ZUw72B3dU3UGlCuQCE";
+const HERE_API_KEY = "yGODsdk71n9nsLYjU8SOmBh4iZpKUdCVI5yFeFKGufc";
+const CRIME_RADIUS_METERS = 500;
+const CRIME_RADIUS = (CRIME_RADIUS_METERS / 6378000) * (180 / 3.14);
+
+// Returns list of waypoints along route from start to end.
+async function getRoute(start, end) {
+  let getCoordinatesFromName =
+      async (address) => {
+    path = `https://maps.googleapis.com/maps/api/geocode/json?address=${
+        address}&key=${GM_API_KEY}`;
+    return axios.get(path).then((res) => res.data.results[0].geometry.location);
+  }
+
+  let startCoord = await getCoordinatesFromName(start);
+  let endCoord = await getCoordinatesFromName(end);
+
+  path = `https://route.ls.hereapi.com/routing/7.2/calculateroute.json?apiKey=${
+      HERE_API_KEY}&waypoint0=geo!${startCoord.lat},${
+      startCoord.lng}&waypoint1=geo!${endCoord.lat},${
+      endCoord.lng}&mode=fastest;pedestrian;traffic:disabled&avoidareas=${
+      getAvoidAreaString(start, end)}`;
+
+  return axios.get(path)
+      .then((res) => res.data.response.route[0].waypoint)
+      .then((waypoints) => {
+        let res = [];
+        for (wp of waypoints) {
+          res.push(wp.originalPosition);
+        }
+        return res;
+      });
+}
+
+// Returns areas to avoid in string format
+async function getAvoidAreaString(start, end) {
+  let getBoxAroundAvoidCoord = (coord) => {
+    let res = "";
+    res += (parseFloat(coord.lat) + CRIME_RADIUS).toString() + ",";
+    res += (parseFloat(coord.lng) + CRIME_RADIUS).toString() + ";";
+    res += (parseFloat(coord.lat) - CRIME_RADIUS).toString() + ",";
+    res += (parseFloat(coord.lng) - CRIME_RADIUS).toString() + "!";
+    return res;
+  };
+
+  let res = "";
+
+  const db = getFirestore();
+  querySnapshot = await getDocs(collection(db, "fbi"));
+  querySnapshot
+      .forEach((doc) => {
+        res += getBoxAroundAvoidCoord(
+            {lat : doc.data().latitude, lng : doc.data().longitude});
+      })
+      .then(() => {
+        // remove last exclamation for formatting
+        if (str[str.length - 1] == "!")
+          res = res.substring(0, res.length - 1);
+        return res;
+      });
+}
+// getRoute("ucla drake stadium", "ucla powell library")
+//     .then((res) => console.log(res));
