@@ -666,9 +666,9 @@ async function getAvoidAreaString(start, end) {
   let getBoxAroundAvoidCoord = (coord) => {
     let res = "";
     res += (parseFloat(coord.lat) + CRIME_RADIUS).toString() + ",";
-    res += (parseFloat(coord.lng) + CRIME_RADIUS).toString() + ";";
-    res += (parseFloat(coord.lat) - CRIME_RADIUS).toString() + ",";
     res += (parseFloat(coord.lng) - CRIME_RADIUS).toString() + "!";
+    res += (parseFloat(coord.lat) - CRIME_RADIUS).toString() + ",";
+    res += (parseFloat(coord.lng) + CRIME_RADIUS).toString() + ";";
     return res;
   };
 
