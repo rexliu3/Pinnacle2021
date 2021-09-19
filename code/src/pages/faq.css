@@ -1,24 +1,28 @@
 @charset "utf-8";
 /* CSS Document */
+* {
+	font-family: Comfortaa;
+}
 
 a{
-color: #282425!important;	
+color: white!important;	
 }
 ul.nav.nav-tabs > li{
 	display: inline-block;
 	line-height: 50px;
 	height: 100%;
 	text-transform:uppercase;
+	transition: 0.5s;
 }
 ul.nav.nav-tabs > li a{
 	display:block;
 	padding:15px;
-	color: #282425!important;
-	
+	color: black!important;
 }
 ul.nav.nav-tabs > li a:hover, ul.nav.nav-tabs > li:hover{
-	background:	#FB282F;
-	color:#fff!important;
+	border-bottom: 2px;
+	text-decoration: underline!important;
+	color:black!important;
 	text-decoration: none!important;
 }
 ul.nav.nav-tabs > li a.active{
@@ -27,20 +31,53 @@ ul.nav.nav-tabs > li a.active{
 	text-decoration: none!important;
 }
 .card-header {
-    background-color: rgb(245,245,245,0.3)!important;
-	border-radius:0!important;
+	background: rgb(0,80,134);
+	background: linear-gradient(135deg, rgba(0,80,134,1) 0%, rgba(176,202,199,1) 100%);
+	border-radius:25px!important;
+	color: white!important;
 }
 .card{
-border-radius:0!important;
+	border: none;
+	border-color: white;
 }
 
 .card > .card-header a::before {
     font-family: fontawesome;
     content: "\f067 ";
-    color: #282425;
+    color: white;
     float: right;
     margin-right: 15px;
     font-weight: 400;
     position: absolute;
     right: 0;
+	border: none!important;
 }
+
+.collapse.show{ 
+	border: none;
+}
+
+#back {
+	background-color: Transparent;
+	background-repeat:no-repeat;
+	border: none;
+	cursor:pointer;
+	overflow: hidden;
+	outline:none;
+	position: absolute;
+	top: 50px;
+	left: 50px;
+	color: color;
+	display: flex;
+	justify-content: center;
+	align-items: center;
+	cursor: pointer;
+	width: 100px;
+	height: 100px;
+	background: rgb(0,80,134);
+	background: linear-gradient(135deg, rgba(0,80,134,1) 0%, rgba(176,202,199,1) 100%);
+	font-size: 40px;
+	border-radius: 50px;
+	box-shadow: 6px 6px 10px -1px rgba(0, 0, 0, 0.15),
+	-6px -6px 10px -1px rgba(255, 255, 255, 0.7);
+  }
