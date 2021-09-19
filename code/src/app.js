@@ -21,13 +21,13 @@ import { initializeApp } from "firebase/app";
 import { getFirestore, collection, getDocs, addDoc } from "firebase/firestore";
 
 const firebaseApp = initializeApp({
-  apiKey: "AIzaSyAtUzlPU092tOueMSllqW_9KOVqnIwh5SI",
-  authDomain: "pinnacle2021v3.firebaseapp.com",
-  projectId: "pinnacle2021v3",
-  storageBucket: "pinnacle2021v3.appspot.com",
-  messagingSenderId: "373427084088",
-  appId: "1:373427084088:web:4bd04036f9bd1e2fb6bfcd",
-  measurementId: "G-K4NXH6S9QX",
+  apiKey: "AIzaSyAKCq1SUzj0i04KPVEpklcj_z8aAGhQBT0",
+  authDomain: "pinnacle2021v4.firebaseapp.com",
+  projectId: "pinnacle2021v4",
+  storageBucket: "pinnacle2021v4.appspot.com",
+  messagingSenderId: "927228990437",
+  appId: "1:927228990437:web:61ad34549e478a2396550c",
+  measurementId: "G-YJ69QCE5WF"
 });
 
 const apiOptions = {
