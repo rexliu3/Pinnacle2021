@@ -581,7 +581,7 @@ async function onReportSubmit() {
 // PATHFINDING ALG
 const GM_API_KEY = "AIzaSyA3ACCckrmeyEyl2ZUw72B3dU3UGlCuQCE";
 const HERE_API_KEY = "yGODsdk71n9nsLYjU8SOmBh4iZpKUdCVI5yFeFKGufc";
-const CRIME_RADIUS_METERS = 500;
+const CRIME_RADIUS_METERS = 1000;
 const CRIME_RADIUS = (CRIME_RADIUS_METERS / 6378000) * (180 / 3.14);
 var path;
 
