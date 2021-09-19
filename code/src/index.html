@@ -1,4 +1,4 @@
-<!DOCTYPE>
+<!DOCTYPE >
 <!--
  Copyright 2021 Google LLC
 
@@ -18,8 +18,8 @@
 <html>
   <head>
     <meta http-equiv="content-type" content="text/html; charset=utf-8" />
-    <title>SafeWalk</title> 
-    <link rel="stylesheet" type="text/css" href="./styles.css" />   
+    <title>SafeWalk</title>
+    <link rel="stylesheet" type="text/css" href="./styles.css" />
     <link
       rel="stylesheet"
       href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css"
@@ -31,14 +31,14 @@
       <h3>Filters</h3>
       <div class="switch-container">
         <label class="switch" id="toggle-heatmap">
-          <input type="checkbox">
+          <input type="checkbox" />
           <span class="slider round"></span>
         </label>
         <p id="filter-text">Heatmap</p>
       </div>
       <div class="switch-container">
-        <label class="switch" >
-          <input type="checkbox" id="toggle-markers">
+        <label class="switch">
+          <input type="checkbox" id="toggle-markers" />
           <span class="slider round"></span>
         </label>
         <p id="filter-text">Markers</p>
@@ -49,41 +49,72 @@
     <div id="directions">
       <div id="directionsPanel"></div>
     </div>
-    
+
     <div id="total"></div>
     <div id="dashContainer">
-      <div class=dashboard>
+      <div class="dashboard">
         <div class="logo">
-          <input id="logotext" class="dashtext" aria-hidden="true" placeholder="Dashboard"/>
+          <input
+            id="logotext"
+            class="dashtext"
+            aria-hidden="true"
+            placeholder="Dashboard"
+          />
           <i class="fa fa-bars" aria-hidden="true" id="hamburger"></i>
         </div>
-        
+
         <div class="dashbar">
           <div class="space"></div>
-          <button class="dashbutton" id="dash1">
-            <!--<i class="fa fa-question" aria-hidden="true"></i>-->
-            <input class="dashtext" aria-hidden="true" placeholder="FAQ"/>
-          </button>
+          <a href="pages/faq.html">
+            <button class="dashbutton" id="dash1">
+              <!--<i class="fa fa-question" aria-hidden="true"></i>-->
+              <input class="dashtext" aria-hidden="true" placeholder="FAQ" />
+            </button>
+          </a>
           <div class="border"></div>
-          <button class="dashbutton" id="dash2">
-            <input class="dashtext" aria-hidden="true" placeholder="Articles"/>
-          </button>
+          <a href="pages/faq.html">
+            <button class="dashbutton" id="dash2">
+              <input
+                class="dashtext"
+                aria-hidden="true"
+                placeholder="Articles"
+              />
+            </button>
+          </a>
           <div class="border"></div>
           <a href="pages/report.html">
             <button class="dashbutton" id="dash3">
-              <input class="dashtext" aria-hidden="true" placeholder="Report a Crime"/>
+              <input
+                class="dashtext"
+                aria-hidden="true"
+                placeholder="Report a Crime"
+              />
             </button>
-        </a>
+          </a>
         </div>
       </div>
     </div>
     <div id="searchContainer">
       <div class="hero">
         <div id="searchBox">
-          <i class="fa fa-location-arrow" aria-hidden="true" id="locationIcon"></i>
+          <i
+            class="fa fa-location-arrow"
+            aria-hidden="true"
+            id="locationIcon"
+          ></i>
           <div id="search">
-            <input type="text" id="origin" class="locate" placeholder="Origin" />
-            <input type="text" id="destination" class="locate" placeholder="Destination">
+            <input
+              type="text"
+              id="origin"
+              class="locate"
+              placeholder="Origin"
+            />
+            <input
+              type="text"
+              id="destination"
+              class="locate"
+              placeholder="Destination"
+            />
             <button id="searchButton">
               <i class="fa fa-search" aria-hidden="true" id="searchIcon"></i>
             </button>
@@ -91,6 +122,5 @@
         </div>
       </div>
     </div>
-</body>
-
+  </body>
 </html>

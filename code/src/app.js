@@ -49,8 +49,9 @@ const mapOptions = {
 var querySnapshot;
 var map, heatmap;
 var gotData = false;
-var createdHeatmap = false;
+var createdMarkers = false;
 var showingMarkers = false;
+var showingHeatmap = false;
 var markers = [];
 
 // <--- Helper Functions
@@ -120,14 +121,14 @@ async function initMap() {
 
   var element = document.getElementById("searchButton");
   var service = new google.maps.places.PlacesService(map);
-  element.onclick = function (event) {
-    searchDirections(directionsService, directionsRenderer, service);
+  element.onclick = async function (event) {
+    await searchDirections(directionsService, directionsRenderer, service);
   };
 
   document
     .getElementById("toggle-markers")
     .addEventListener("change", (event) => {
-      if (gotData === true) {
+      if (createdMarkers) {
         if (showingMarkers) {
           hideMarkers();
         } else {
@@ -143,7 +144,7 @@ async function initMap() {
   document
     .getElementById("toggle-heatmap")
     .addEventListener("change", (event) => {
-      if (createdHeatmap) {
+      if (gotData === true) {
         if (showingHeatmap) {
           heatmap.setMap(null);
         } else {
@@ -218,7 +219,7 @@ async function initMap() {
 }
 
 // Search fastest path directions
-function searchDirections(directionsService, directionsRenderer, service) {
+async function searchDirections(directionsService, directionsRenderer, service) {
   var start = document.getElementById("origin").value; // "1580 Point W Blvd, Coppell, TX";
   var end = document.getElementById("destination").value; // "8450 N Belt Line Rd, Irving, TX";
 
@@ -255,11 +256,14 @@ function searchDirections(directionsService, directionsRenderer, service) {
   if (start !== "" && end !== "") {
     directionsRenderer.setMap(map);
     directionsRenderer.setPanel(document.getElementById("directionsPanel"));
+    
+    var pts = await getRoute(start, end).then((res) => res);
 
     var request = {
       origin: start,
       destination: end,
       travelMode: "WALKING",
+      waypoints: pts,
     };
     directionsService.route(request, function (response, status) {
       if (status == "OK") {
@@ -273,7 +277,7 @@ function searchDirections(directionsService, directionsRenderer, service) {
         computeTotalDistance(directions);
       }
     });
-    displayRoute(start, end, directionsService, directionsRenderer);
+    displayRoute(start, end, directionsService, directionsRenderer, pts);
     adjustMap("tilt", 67.5);
 
     var geocoder = new google.maps.Geocoder();
@@ -291,10 +295,16 @@ function searchDirections(directionsService, directionsRenderer, service) {
 // Get data points for heatmap creation
 function getPoints() {
   var points = [];
+  console.log(querySnapshot);
   querySnapshot.forEach((doc) => {
-    points.push(
-      new google.maps.LatLng(doc.data().latitude, doc.data().longitude)
-    );
+    if (
+      doc.data().latitude !== undefined &&
+      doc.data().longitude !== undefined
+    ) {
+      points.push(
+        new google.maps.LatLng(doc.data().latitude, doc.data().longitude)
+      );
+    }
   });
   return points;
 }
@@ -302,6 +312,7 @@ function getPoints() {
 async function addHeatMap() {
   const db = getFirestore();
   querySnapshot = await getDocs(collection(db, "fbi"));
+
   heatmap = new google.maps.visualization.HeatmapLayer({
     data: getPoints(),
     map: map,
@@ -310,54 +321,59 @@ async function addHeatMap() {
   setRadius(50);
   setOpacity(0.8);
   adjustMap("tilt", 67.5);
-  createdHeatmap = true;
   gotData = true;
 }
 
 async function addMarkers() {
   if (gotData === true) {
     querySnapshot.forEach((doc) => {
-      const contentString =
-        '<div id="content">' +
-        '<div id="siteNotice">' +
-        "</div>" +
-        '<h1 id="firstHeading" class="firstHeading">' +
-        capitalizeFirstLetter(doc.data().offense) +
-        "</h1>" +
-        '<div id="bodyContent">' +
-        "<p><b>Date Year: </b>" +
-        doc.data().data_year +
-        "</p>" +
-        "</div>" +
-        "</div>";
+      if (
+        doc.data().latitude !== undefined &&
+        doc.data().longitude !== undefined
+      ) {
+        const contentString =
+          '<div id="content">' +
+          '<div id="siteNotice">' +
+          "</div>" +
+          '<h1 id="firstHeading" class="firstHeading">' +
+          capitalizeFirstLetter(doc.data().offense) +
+          "</h1>" +
+          '<div id="bodyContent">' +
+          "<p><b>Date Year: </b>" +
+          doc.data().data_year +
+          "</p>" +
+          "</div>" +
+          "</div>";
 
-      const infoWindow = new google.maps.InfoWindow({
-        content: contentString,
-      });
-
-      infoWindow.addListener("closeclick", () => {
-        adjustMap("tilt", 67.5);
-      });
-
-      const marker = new google.maps.Marker({
-        position: { lat: doc.data().latitude, lng: doc.data().longitude },
-        map,
-        title: capitalizeFirstLetter(doc.data().offense),
-      });
-
-      marker.addListener("click", () => {
-        infoWindow.open({
-          anchor: marker,
-          map,
-          shouldFocus: false,
+        const infoWindow = new google.maps.InfoWindow({
+          content: contentString,
         });
-      });
 
-      markers.push(marker);
+        infoWindow.addListener("closeclick", () => {
+          adjustMap("tilt", 67.5);
+        });
+
+        const marker = new google.maps.Marker({
+          position: { lat: doc.data().latitude, lng: doc.data().longitude },
+          map,
+          title: capitalizeFirstLetter(doc.data().offense),
+        });
+
+        marker.addListener("click", () => {
+          infoWindow.open({
+            anchor: marker,
+            map,
+            shouldFocus: false,
+          });
+        });
+
+        markers.push(marker);
+      }
     });
+    createdMarkers = true;
   } else {
     alert("Create Heatmap First!");
-    document.getElementById('toggle-markers').checked = false;
+    document.getElementById("toggle-markers").checked = false;
   }
 }
 // ---> End of Heatmap and Markers Functions
@@ -379,13 +395,14 @@ function showMarkers() {
   setMapOnAll(map);
 }
 
-function displayRoute(origin, destination, service, display) {
+function displayRoute(origin, destination, service, display, pts) {
   service
     .route({
       origin: origin,
       destination: destination,
       travelMode: google.maps.TravelMode.WALKING,
       avoidTolls: true,
+      waypoints: pts
     })
     .then((result) => {
       display.setDirections(result);
@@ -545,34 +562,37 @@ const GM_API_KEY = "AIzaSyA3ACCckrmeyEyl2ZUw72B3dU3UGlCuQCE";
 const HERE_API_KEY = "yGODsdk71n9nsLYjU8SOmBh4iZpKUdCVI5yFeFKGufc";
 const CRIME_RADIUS_METERS = 500;
 const CRIME_RADIUS = (CRIME_RADIUS_METERS / 6378000) * (180 / 3.14);
+var path;
 
 // Returns list of waypoints along route from start to end.
 async function getRoute(start, end) {
-  let getCoordinatesFromName =
-      async (address) => {
-    path = `https://maps.googleapis.com/maps/api/geocode/json?address=${
-        address}&key=${GM_API_KEY}`;
+  let getCoordinatesFromName = async (address) => {
+    path = `https://maps.googleapis.com/maps/api/geocode/json?address=${address}&key=${GM_API_KEY}`;
     return axios.get(path).then((res) => res.data.results[0].geometry.location);
-  }
+  };
 
   let startCoord = await getCoordinatesFromName(start);
   let endCoord = await getCoordinatesFromName(end);
 
-  path = `https://route.ls.hereapi.com/routing/7.2/calculateroute.json?apiKey=${
-      HERE_API_KEY}&waypoint0=geo!${startCoord.lat},${
-      startCoord.lng}&waypoint1=geo!${endCoord.lat},${
-      endCoord.lng}&mode=fastest;pedestrian;traffic:disabled&avoidareas=${
-      getAvoidAreaString(start, end)}`;
+  path = `https://route.ls.hereapi.com/routing/7.2/calculateroute.json?apiKey=${HERE_API_KEY}&waypoint0=geo!${
+    startCoord.lat
+  },${startCoord.lng}&waypoint1=geo!${endCoord.lat},${
+    endCoord.lng
+  }&mode=fastest;pedestrian;traffic:disabled&avoidareas=${getAvoidAreaString(
+    start,
+    end
+  )}`;
 
-  return axios.get(path)
-      .then((res) => res.data.response.route[0].waypoint)
-      .then((waypoints) => {
-        let res = [];
-        for (wp of waypoints) {
-          res.push(wp.originalPosition);
-        }
-        return res;
-      });
+  return axios
+    .get(path)
+    .then((res) => res.data.response.route[0].waypoint)
+    .then((waypoints) => {
+      let res = [];
+      for (wp of waypoints) {
+        res.push(wp.originalPosition);
+      }
+      return res;
+    });
 }
 
 // Returns areas to avoid in string format
@@ -591,14 +611,23 @@ async function getAvoidAreaString(start, end) {
   const db = getFirestore();
   querySnapshot = await getDocs(collection(db, "fbi"));
   querySnapshot
-      .forEach((doc) => {
-        res += getBoxAroundAvoidCoord(
-            {lat : doc.data().latitude, lng : doc.data().longitude});
-      })
-      .then(() => {
-        // remove last exclamation for formatting
-        if (str[str.length - 1] == "!")
-          res = res.substring(0, res.length - 1);
-        return res;
+    .forEach((doc) => {
+      res += getBoxAroundAvoidCoord({
+        lat: doc.data().latitude,
+        lng: doc.data().longitude,
       });
+    })
+    .then(() => {
+      // remove last exclamation for formatting
+      if (str[str.length - 1] == "!") res = res.substring(0, res.length - 1);
+      return res;
+    });
 }
+
+/* [
+  {latitude: 25l25, longitude: 252525},
+  {latitude: 25l25, longitude: 252525},
+  {latitude: 25l25, longitude: 252525},
+]
+
+*/
