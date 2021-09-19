@@ -20,15 +20,26 @@ import { GLTFLoader } from "three/examples/jsm/loaders/GLTFLoader.js";
 import { initializeApp } from "firebase/app";
 import { getFirestore, collection, getDocs, addDoc } from "firebase/firestore";
 
+/*const firebaseApp = initializeApp({
+  apiKey: "AIzaSyCUvjvEYUfKivJPJ8xS6inRXlHW4pW0HfA",
+  authDomain: "pinnacle2021v2.firebaseapp.com",
+  projectId: "pinnacle2021v2",
+  storageBucket: "pinnacle2021v2.appspot.com",
+  messagingSenderId: "347442946979",
+  appId: "1:347442946979:web:a12be8ec3003ec7cb9f016",
+  measurementId: "G-9FL3CCBLF5",
+});*/
+
 const firebaseApp = initializeApp({
-  apiKey: "AIzaSyAIx4fWlxvkL6AF_Vc3QcMS60LVxXOaOOg",
-  authDomain: "pinnacle2021-b6e50.firebaseapp.com",
-  projectId: "pinnacle2021-b6e50",
-  storageBucket: "pinnacle2021-b6e50.appspot.com",
-  messagingSenderId: "12249211641",
-  appId: "1:12249211641:web:429ccd4271bd42b3e77828",
-  measurementId: "G-8F4Z9J2M4R"
+  apiKey: "AIzaSyAtUzlPU092tOueMSllqW_9KOVqnIwh5SI",
+  authDomain: "pinnacle2021v3.firebaseapp.com",
+  projectId: "pinnacle2021v3",
+  storageBucket: "pinnacle2021v3.appspot.com",
+  messagingSenderId: "373427084088",
+  appId: "1:373427084088:web:4bd04036f9bd1e2fb6bfcd",
+  measurementId: "G-K4NXH6S9QX"
 });
+
 
 const apiOptions = {
   apiKey: "AIzaSyA3ACCckrmeyEyl2ZUw72B3dU3UGlCuQCE",
@@ -49,7 +60,6 @@ const mapOptions = {
   streetViewControl: true,
   rotateControl: true,
   fullscreenControl: true,
-
 };
 
 var svgMarker;
@@ -136,7 +146,7 @@ async function initMap() {
   };
 
   symbol = {
-    path: google.maps.SymbolPath.CIRCLE	,
+    path: google.maps.SymbolPath.CIRCLE,
     scale: 8,
     strokeColor: "#005086",
   };
@@ -261,7 +271,11 @@ function animateCircle(line) {
 }
 
 // Search fastest path directions
-async function searchDirections(directionsService, directionsRenderer, service) {
+async function searchDirections(
+  directionsService,
+  directionsRenderer,
+  service
+) {
   var start = document.getElementById("origin").value; // "1580 Point W Blvd, Coppell, TX";
   var end = document.getElementById("destination").value; // "8450 N Belt Line Rd, Irving, TX";
 
@@ -298,7 +312,7 @@ async function searchDirections(directionsService, directionsRenderer, service) 
   if (start !== "" && end !== "") {
     directionsRenderer.setMap(map);
     directionsRenderer.setPanel(document.getElementById("directionsPanel"));
-    
+
     var pts = await getRoute(start, end).then((res) => res);
 
     var request = {
@@ -311,7 +325,7 @@ async function searchDirections(directionsService, directionsRenderer, service) 
       if (status == "OK") {
         polyline = new google.maps.Polyline({
           path: [],
-          strokeColor: '#0000FF',
+          strokeColor: "#0000FF",
           strokeWeight: 3,
           icons: [
             {
@@ -328,7 +342,6 @@ async function searchDirections(directionsService, directionsRenderer, service) 
           for (let j = 0; j < steps.length; j++) {
             var nextSegment = steps[j].path;
             for (let k = 0; k < nextSegment.length; k++) {
-              console.log("here");
               polyline.getPath().push(nextSegment[k]);
               bounds.extend(nextSegment[k]);
             }
@@ -341,7 +354,6 @@ async function searchDirections(directionsService, directionsRenderer, service) 
         animateCircle(polyline);
       }
     });
-    
 
     directionsRenderer.addListener("directions_changed", () => {
       const directions = directionsRenderer.getDirections();
@@ -367,7 +379,6 @@ async function searchDirections(directionsService, directionsRenderer, service) 
 // Get data points for heatmap creation
 function getPoints() {
   var points = [];
-  console.log(querySnapshot);
   querySnapshot.forEach((doc) => {
     if (
       doc.data().latitude !== undefined &&
@@ -435,14 +446,29 @@ async function addMarkers() {
           anchor: new google.maps.Point(0, 32),
         };
 
-        if (doc.data().offense === "violent-crime" || doc.data().offense === "homicide" ) {
-          image.url = "http://www.simpleimageresizer.com/_uploads/photos/5923593c/Pngtree_knife_icon_circle_5278662-removebg-preview_35x35.png";
-        } else if (doc.data().offense === "aggravated-assault" || doc.data().offense === "rape" ||  doc.data().offense === "rape-legacy") {
-          image.url = "http://www.simpleimageresizer.com/_uploads/photos/5923593c/assault_1_35x35.png";
+        if (
+          doc.data().offense === "violent-crime" ||
+          doc.data().offense === "homicide"
+        ) {
+          image.url =
+            "http://www.simpleimageresizer.com/_uploads/photos/5923593c/Pngtree_knife_icon_circle_5278662-removebg-preview_35x35.png";
+        } else if (
+          doc.data().offense === "aggravated-assault" ||
+          doc.data().offense === "rape" ||
+          doc.data().offense === "rape-legacy"
+        ) {
+          image.url =
+            "http://www.simpleimageresizer.com/_uploads/photos/5923593c/assault_1_35x35.png";
         } else if (doc.data().offense === "arson") {
-          image.url = "http://www.simpleimageresizer.com/_uploads/photos/5923593c/arson-removebg-preview_35x35.png";
-        } else if (doc.data().offense === "burglary" || doc.data().offense === "larceny" || doc.data().offense === "robbery") {
-          image.url = "http://www.simpleimageresizer.com/_uploads/photos/5923593c/burglary_35x35.png";
+          image.url =
+            "http://www.simpleimageresizer.com/_uploads/photos/5923593c/arson-removebg-preview_35x35.png";
+        } else if (
+          doc.data().offense === "burglary" ||
+          doc.data().offense === "larceny" ||
+          doc.data().offense === "robbery"
+        ) {
+          image.url =
+            "http://www.simpleimageresizer.com/_uploads/photos/5923593c/burglary_35x35.png";
         }
 
         const marker = new google.maps.Marker({
@@ -495,10 +521,9 @@ function displayRoute(origin, destination, service, display, pts) {
       destination: destination,
       travelMode: google.maps.TravelMode.WALKING,
       avoidTolls: true,
-      waypoints: pts
+      waypoints: pts,
     })
     .then((result) => {
-      console.log(result.routes[0].overview_path)
       display.setDirections(result);
     })
     .catch((e) => {
@@ -519,7 +544,7 @@ function computeTotalDistance(result) {
   }
 
   total = total / 1000;
-  document.getElementById("total").innerHTML = total + " km";
+  // document.getElementById("total").innerHTML = total + " km";
 }
 
 function initWebglOverlayView(map) {
@@ -612,7 +637,7 @@ locationIcon.onclick = function () {
   searchBox.classList.toggle("active");
   searchContainer.classList.toggle("grey");
   if (directionsContainer.classList.contains("active")) {
-    directionsContainer.classList.toggle("active")
+    directionsContainer.classList.toggle("active");
   }
 };
 
@@ -664,12 +689,11 @@ async function onReportSubmit() {
 // Consts
 const GM_API_KEY = "AIzaSyA3ACCckrmeyEyl2ZUw72B3dU3UGlCuQCE";
 const HERE_API_KEY = "yGODsdk71n9nsLYjU8SOmBh4iZpKUdCVI5yFeFKGufc";
-const CRIME_RADIUS_METERS = 1000;
+const CRIME_RADIUS_METERS = 100;
 const CRIME_RADIUS = (CRIME_RADIUS_METERS / 6378000) * (180 / 3.14);
 
 // Returns list of waypoints along route from start to end.
 async function getRoute(start, end) {
-
   // Takes in address/name of pace, get object with latitude and longitude
   let getCoordinatesFromName = async (address) => {
     let path = `https://maps.googleapis.com/maps/api/geocode/json?address=${address}&key=${GM_API_KEY}`;
@@ -681,9 +705,7 @@ async function getRoute(start, end) {
   let endCoord = await getCoordinatesFromName(end);
   let avoidAreaString = await getAvoidAreaString(startCoord, startCoord);
 
-  let path = `https://route.ls.hereapi.com/routing/7.2/calculateroute.json?apiKey=${HERE_API_KEY}&waypoint0=geo!${
-    startCoord.lat},${startCoord.lng}&waypoint1=geo!${endCoord.lat},${endCoord.lng
-  }&mode=fastest;pedestrian;traffic:disabled&avoidareas=${avoidAreaString}`;
+  let path = `https://route.ls.hereapi.com/routing/7.2/calculateroute.json?apiKey=${HERE_API_KEY}&waypoint0=geo!${startCoord.lat},${startCoord.lng}&waypoint1=geo!${endCoord.lat},${endCoord.lng}&mode=fastest;pedestrian;traffic:disabled&avoidareas=${avoidAreaString}`;
 
   return axios
     .get(path)
@@ -696,7 +718,7 @@ async function getRoute(start, end) {
             lat: w.originalPosition.latitude,
             lng: w.originalPosition.longitude,
           },
-          stopover: false
+          stopover: false,
         });
       }
       return res;
@@ -705,7 +727,6 @@ async function getRoute(start, end) {
 
 // Returns list of waypoints along route from start to end.
 async function getRouteNoObstacles(start, end) {
-
   // Takes in address/name of pace, get object with latitude and longitude
   let getCoordinatesFromName = async (address) => {
     let path = `https://maps.googleapis.com/maps/api/geocode/json?address=${address}&key=${GM_API_KEY}`;
@@ -728,10 +749,10 @@ async function getRouteNoObstacles(start, end) {
       for (let w of waypoints) {
         res.push({
           location: {
-            lat: w.originalPosition.latitude,
-            lng: w.originalPosition.longitude,
+            lat: w.mappedPosition.latitude,
+            lng: w.mappedPosition.longitude,
           },
-          stopover: false
+          stopover: false,
         });
       }
       return res;
@@ -740,23 +761,25 @@ async function getRouteNoObstacles(start, end) {
 
 // Returns areas to avoid in string format
 async function getAvoidAreaString(start, end) {
-
   // Draw box around a coordinate in order to avoid area.
   let getBoxAroundAvoidCoord = (coord) => {
     let res = "";
     res += (parseFloat(coord.lat) + CRIME_RADIUS).toString() + ",";
-    res += (parseFloat(coord.lng) - CRIME_RADIUS).toString() + "!";
+    res += (parseFloat(coord.lng) - CRIME_RADIUS).toString() + ";";
     res += (parseFloat(coord.lat) - CRIME_RADIUS).toString() + ",";
-    res += (parseFloat(coord.lng) + CRIME_RADIUS).toString() + ";";
+    res += (parseFloat(coord.lng) + CRIME_RADIUS).toString() + "!";
     return res;
   };
 
   // Return distance of point pt from fastest path.
   // Source: wikipedia LMAO
   let pathDistanceFromOptimal = (pt) => {
-    let x0 = pt.lat, y0 = pt.lng;
-    let x1 = start.latitude, y1 = start.longitude;
-    let x2 = end.latitude, y2 = end.longitude;
+    let x0 = pt.lat,
+      y0 = pt.lng;
+    let x1 = start.latitude,
+      y1 = start.longitude;
+    let x2 = end.latitude,
+      y2 = end.longitude;
 
     var A = x0 - x1;
     var B = y0 - y1;
@@ -766,8 +789,9 @@ async function getAvoidAreaString(start, end) {
     var dot = A * C + B * D;
     var len_sq = C * C + D * D;
     var param = -1;
-    if (len_sq != 0) // in case of 0 length line
-        param = dot / len_sq;
+    if (len_sq != 0)
+      // in case of 0 length line
+      param = dot / len_sq;
 
     var xx, yy;
 
@@ -793,9 +817,9 @@ async function getAvoidAreaString(start, end) {
   const db = getFirestore();
   querySnapshot = await getDocs(collection(db, "fbi"));
   querySnapshot.forEach((doc) => {
-    let pt = { 
-      lat: doc.data().latitude, 
-      lng: doc.data().longitude 
+    let pt = {
+      lat: doc.data().latitude,
+      lng: doc.data().longitude,
     };
 
     // Filter for closest points
@@ -809,16 +833,14 @@ async function getAvoidAreaString(start, end) {
         }
       }
     }
-    if (pts.length > 20) {
+    if (pts.length > 3) {
       pts.pop();
     }
   });
 
-  for (let pt of pts) 
-    res += getBoxAroundAvoidCoord(pt);
+  for (let pt of pts) res += getBoxAroundAvoidCoord(pt);
 
   // Remove last exclamation for formatting
-  if (res[res.length - 1] == "!") 
-    res = res.substring(0, res.length - 1);
+  if (res[res.length - 1] == "!") res = res.substring(0, res.length - 1);
   return res;
 }
