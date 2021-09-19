@@ -62,6 +62,8 @@ const mapOptions = {
 };
 
 var svgMarker;
+var symbol;
+var polyline;
 
 var querySnapshot;
 var map, heatmap;
@@ -294,6 +296,49 @@ async function searchDirections(
   if (start !== "" && end !== "") {
     directionsRenderer.setMap(map);
     directionsRenderer.setPanel(document.getElementById("directionsPanel"));
+
+    // Get Path
+    var request = {
+      origin: start,
+      destination: end,
+      travelMode: "WALKING",
+    };
+
+    directionsService.route(request, async function (response, status) {
+      if (status == "OK") {
+        polyline = new google.maps.Polyline({
+          path: [],
+          strokeColor: "#0000FF",
+          strokeWeight: 3,
+          icons: [
+            {
+              icon: symbol,
+              offset: "100%",
+            },
+          ],
+        });
+        var bounds = new google.maps.LatLngBounds();
+
+        var legs = response.routes[0].legs;
+        for (let i = 0; i < legs.length; i++) {
+          var steps = legs[i].steps;
+          for (let j = 0; j < steps.length; j++) {
+            var nextSegment = steps[j].path;
+            for (let k = 0; k < nextSegment.length; k++) {
+              polyline.getPath().push(nextSegment[k]);
+              bounds.extend(nextSegment[k]);
+            }
+          }
+        }
+        polyline.setMap(map);
+        directionsRenderer.setDirections(response);
+      }
+    });
+
+
+
+
+
     
     var pts = await getWaypoints(start, end);
 
@@ -304,7 +349,7 @@ async function searchDirections(
       waypoints: pts,
     };
 
-    directionsService.route(request, function (response, status) {
+    directionsService.route(request, async function (response, status) {
       if (status == "OK") {
         polyline = new google.maps.Polyline({
           path: [],
