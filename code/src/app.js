@@ -321,6 +321,7 @@ async function searchDirections(
       travelMode: "WALKING",
       waypoints: pts,
     };
+
     directionsService.route(request, function (response, status) {
       if (status == "OK") {
         polyline = new google.maps.Polyline({
@@ -350,6 +351,7 @@ async function searchDirections(
         polyline.setMap(map);
 
         directionsRenderer.setDirections(response);
+        console.log(polyline.getPath().Je);
 
         animateCircle(polyline);
       }
