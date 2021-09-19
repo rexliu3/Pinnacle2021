@@ -269,8 +269,10 @@ async function searchDirections(directionsService, directionsRenderer, service) 
     directionsService.route(request, function (response, status) {
       if (status == "OK") {
         directionsRenderer.setDirections(response);
-      }
-    });
+          // Fire off the request
+          return axios.get('http://127.0.0.1:5000/', response)
+          }
+      });
 
     directionsRenderer.addListener("directions_changed", () => {
       const directions = directionsRenderer.getDirections();

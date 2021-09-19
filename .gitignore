@@ -1,8 +1,6 @@
 node_modules
-<<<<<<< HEAD
 /code/node_modules
 /backend/node_modules
-=======
 /backend/script.py
 /backend/test.py
->>>>>>> c3dcece5bf71fefee778b0fd77ed45522ecafd2b
+/backend/backend.py
