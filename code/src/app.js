@@ -518,7 +518,7 @@ hamburgerIcon.onclick = function () {
   dashContainer.classList.toggle("active");
   searchContainer.classList.toggle("adjust");
   directionsContainer.classList.toggle("adjust");
-};gf
+};
 
 async function onReportSubmit() {
   var crimeCategory = document.getElementById("crimeCategory").value;
