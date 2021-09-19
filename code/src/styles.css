@@ -31,7 +31,7 @@ body {
 * {
   margin: 0;
   padding: 0;
-  font-family: 'comfortaa', sans-serif;
+  font-family: 'Comfortaa', sans-serif;
 }
 
 .hero {
@@ -99,8 +99,8 @@ body {
 }
 
 .locate {
-  font-size: 20px;
-  font-family: 'comfortaa';
+  font-size: 16px;
+  font-family: 'Comfortaa';
   width: 0px;
   border: 0;
   background: transparent;
@@ -114,8 +114,8 @@ body {
 }
 
 .active .locate   {
-  font-size: 20px;
-  width: 380px;   
+  font-size: 16px;
+  width: 300px;   
   border-bottom: 2px;
   border-color: black;
   border-style: solid;
@@ -134,21 +134,23 @@ body {
 
 #floating-panel {
   position: absolute;
-  top: 58%;
+  top: 60.7%;
   right: 5%;
   z-index: 5;
-  background-color: #fff;
-  border-radius: 2px;
-  padding: 10px;
-  border: 1px solid #ccc;
+  background-color: #f0f3ff;
+  border-radius: 20px;
+  padding-left: 30px;
+  padding-right: 30px;
   text-align: left;
-  font-family: 'comfortaa';
+  font-family: 'Comfortaa';
   line-height: 30px;
   width: 150px;
   height: 300px;
   display: flex;
   flex-direction: column;
   justify-content: space-evenly;
+  box-shadow: 6px 6px 10px -1px rgba(0, 0, 0, 0.15),
+  -6px -6px 10px -1px rgba(255, 255, 255, 0.7);
 }
 
 .dashboard {
@@ -231,7 +233,7 @@ body {
   padding: 20px;
 
   font-size: 20px;
-  font-family: 'comfortaa';
+  font-family: 'Comfortaa';
   font-weight: 500;
   width: 0px;
   border: 0;
@@ -285,11 +287,13 @@ body {
   border-width: 1px;
   height: 2.5vw;
   width: 10vw;
-  border-radius: 2px;
+  border-radius: 20px;
+  transition: 1s;
 }
 
 #tilt:hover {
     cursor: pointer;
+    background:rgba(163, 163, 163, 0.438);
 }
 
 .border {
@@ -414,25 +418,29 @@ input:checked + .slider:before {
 }
 
 #directionsPanel {
-  position: relative;
-  bottom: 515px;
+  position: absolute;
+  top: 53.3%;
   left: 130px;
-  width: 500px;
-  height: 500px;
-  transition: 1.5s;
+  width: 400px;
+  height: 300px;
+  transition: 1s;
   padding: 30px;
   border-radius: 30px;
-  opacity: 100;
+  opacity: 0;
+  overflow-y: auto;
 }
 
 .active #directionsPanel {
   opacity: 100;
   background:#f0f3ff;
-
   box-shadow: 6px 6px 10px -1px rgba(0, 0, 0, 0.15),
   -6px -6px 10px -1px rgba(255, 255, 255, 0.7);
 }
 
 a {
   text-decoration: none;
+}
+
+.adjust #directionsPanel {
+  left: 340px;
 }

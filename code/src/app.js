@@ -44,6 +44,7 @@ const mapOptions = {
   center: { lat: 34.074949, lng: -118.441318 },
   mapId: "56e39613eced90d4",
   mapTypeControl: false,
+  fullscreenControl: false,
 };
 
 var querySnapshot;
@@ -511,11 +512,15 @@ const searchBox = document.getElementById("searchBox"),
   searchIcon = document.getElementById("searchIcon"),
   hamburgerIcon = document.getElementById("hamburger"),
   dashContainer = document.getElementById("dashContainer"),
-  searchContainer = document.getElementById("searchContainer");
+  searchContainer = document.getElementById("searchContainer"),
+  directionsContainer = document.getElementById("directions");
 
 locationIcon.onclick = function () {
   searchBox.classList.toggle("active");
   searchContainer.classList.toggle("grey");
+  if (directionsContainer.classList.contains("active")) {
+    directionsContainer.classList.toggle("active")
+  }
 };
 
 searchIcon.onclick = function () {
@@ -523,11 +528,13 @@ searchIcon.onclick = function () {
     searchBox.classList.toggle("active");
     searchContainer.classList.toggle("grey");
   }
+  directionsContainer.classList.toggle("active");
 };
 
 hamburgerIcon.onclick = function () {
   dashContainer.classList.toggle("active");
   searchContainer.classList.toggle("adjust");
+  directionsContainer.classList.toggle("adjust");
 };
 
 async function onReportSubmit() {
