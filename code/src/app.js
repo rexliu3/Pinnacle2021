@@ -126,12 +126,8 @@ async function initMap() {
   };
 
   document
-<<<<<<< HEAD
-    .getElementById("toggle-markers").addEventListener('change', (event) => {
-=======
     .getElementById("toggle-markers")
     .addEventListener("change", (event) => {
->>>>>>> 36531dda7e1a45d1ea00e00b4e881d1b1d332304
       if (gotData === true) {
         if (showingMarkers) {
           hideMarkers();
@@ -143,18 +139,11 @@ async function initMap() {
         addMarkers();
         showingMarkers = true;
       }
-<<<<<<< HEAD
-    })
-
-  document
-    .getElementById("toggle-heatmap").addEventListener('change', (event) => {
-=======
     });
 
   document
     .getElementById("toggle-heatmap")
     .addEventListener("change", (event) => {
->>>>>>> 36531dda7e1a45d1ea00e00b4e881d1b1d332304
       if (createdHeatmap) {
         if (showingHeatmap) {
           heatmap.setMap(null);
@@ -166,11 +155,7 @@ async function initMap() {
         addHeatMap();
         showingHeatmap = true;
       }
-<<<<<<< HEAD
-    })
-=======
     });
->>>>>>> 36531dda7e1a45d1ea00e00b4e881d1b1d332304
   document.getElementById("tilt").addEventListener("click", setTilt);
 
   const inputOrigin = document.getElementById("origin");
@@ -532,11 +517,8 @@ searchIcon.onclick = function () {
 hamburgerIcon.onclick = function () {
   dashContainer.classList.toggle("active");
   searchContainer.classList.toggle("adjust");
-<<<<<<< HEAD
   directionsContainer.classList.toggle("adjust");
-};
-=======
-};
+};gf
 
 async function onReportSubmit() {
   var crimeCategory = document.getElementById("crimeCategory").value;
@@ -627,4 +609,3 @@ async function getAvoidAreaString(start, end) {
         return res;
       });
 }
->>>>>>> 36531dda7e1a45d1ea00e00b4e881d1b1d332304
