@@ -15,17 +15,18 @@
 import { Loader } from "@googlemaps/js-api-loader";
 import * as THREE from "three";
 import { GLTFLoader } from "three/examples/jsm/loaders/GLTFLoader.js";
+
 import { initializeApp } from "firebase/app";
-import { getFirestore, collection, getDocs } from "firebase/firestore";
+import { getFirestore, collection, getDocs, addDoc } from "firebase/firestore";
 
 const firebaseApp = initializeApp({
-  apiKey: "AIzaSyCUvjvEYUfKivJPJ8xS6inRXlHW4pW0HfA",
-  authDomain: "pinnacle2021v2.firebaseapp.com",
-  projectId: "pinnacle2021v2",
-  storageBucket: "pinnacle2021v2.appspot.com",
-  messagingSenderId: "347442946979",
-  appId: "1:347442946979:web:a12be8ec3003ec7cb9f016",
-  measurementId: "G-9FL3CCBLF5",
+  apiKey: "AIzaSyAtUzlPU092tOueMSllqW_9KOVqnIwh5SI",
+  authDomain: "pinnacle2021v3.firebaseapp.com",
+  projectId: "pinnacle2021v3",
+  storageBucket: "pinnacle2021v3.appspot.com",
+  messagingSenderId: "373427084088",
+  appId: "1:373427084088:web:4bd04036f9bd1e2fb6bfcd",
+  measurementId: "G-K4NXH6S9QX",
 });
 
 const apiOptions = {
@@ -70,7 +71,6 @@ const adjustMap = function (mode, amount) {
 };
 // End of Helper Functions --->
 
-
 function setGradient() {
   const gradient = [
     "rgba(0, 255, 255, 0)",
@@ -95,7 +95,7 @@ function setRadius(radius) {
   heatmap.set("radius", radius);
 }
 function setOpacity(opacity) {
-  heatmap.set("opacity",opacity);
+  heatmap.set("opacity", opacity);
 }
 
 // <--- Listeners
@@ -124,34 +124,36 @@ async function initMap() {
   };
 
   document
-  .getElementById("toggle-markers").addEventListener('change', (event) => {
-    if (gotData === true) {
-      if (showingMarkers) {
-        hideMarkers();
+    .getElementById("toggle-markers")
+    .addEventListener("change", (event) => {
+      if (gotData === true) {
+        if (showingMarkers) {
+          hideMarkers();
+        } else {
+          showMarkers();
+        }
+        showingMarkers = !showingMarkers;
       } else {
-        showMarkers();
+        addMarkers();
+        showingMarkers = true;
       }
-      showingMarkers = !showingMarkers;
-    } else {
-      addMarkers();
-      showingMarkers = true;
-    }
-  })
- 
+    });
+
   document
-  .getElementById("toggle-heatmap").addEventListener('change', (event) => {
-    if (createdHeatmap) {
-      if (showingHeatmap) {
-        heatmap.setMap(null);
+    .getElementById("toggle-heatmap")
+    .addEventListener("change", (event) => {
+      if (createdHeatmap) {
+        if (showingHeatmap) {
+          heatmap.setMap(null);
+        } else {
+          heatmap.setMap(heatmap.getMap() ? null : map);
+        }
+        showingHeatmap = !showingHeatmap;
       } else {
-        heatmap.setMap(heatmap.getMap() ? null : map);
+        addHeatMap();
+        showingHeatmap = true;
       }
-      showingHeatmap = !showingHeatmap;
-    } else {
-      addHeatMap();
-      showingHeatmap = true;
-    }
-  })
+    });
   document.getElementById("tilt").addEventListener("click", setTilt);
 
   const inputOrigin = document.getElementById("origin");
@@ -205,14 +207,16 @@ async function initMap() {
   });
 
   const inputDestination = document.getElementById("destination");
-  const searchBoxDestination = new google.maps.places.SearchBox(inputDestination);
+  const searchBoxDestination = new google.maps.places.SearchBox(
+    inputDestination
+  );
   map.addListener("bounds_changed", () => {
     searchBoxDestination.setBounds(map.getBounds());
   });
   return map;
 }
 
-// Search fastest path directions 
+// Search fastest path directions
 function searchDirections(directionsService, directionsRenderer, service) {
   var start = document.getElementById("origin").value; // "1580 Point W Blvd, Coppell, TX";
   var end = document.getElementById("destination").value; // "8450 N Belt Line Rd, Irving, TX";
@@ -228,7 +232,7 @@ function searchDirections(directionsService, directionsRenderer, service) {
         for (let i = 0; i < results.length; i++) {
           createMarker(results[i]);
         }
-        start = results[0].geometry.location
+        start = results[0].geometry.location;
       }
     });
 
@@ -236,13 +240,13 @@ function searchDirections(directionsService, directionsRenderer, service) {
       query: end,
       fields: ["name", "geometry"],
     };
-  
+
     service.findPlaceFromQuery(request, (results, status) => {
       if (status === google.maps.places.PlacesServiceStatus.OK && results) {
         for (let i = 0; i < results.length; i++) {
           createMarker(results[i]);
         }
-        end = results[0].geometry.location
+        end = results[0].geometry.location;
       }
     });
   }
@@ -295,65 +299,65 @@ function getPoints() {
 }
 
 async function addHeatMap() {
-  if (gotData === true) {
-    heatmap = new google.maps.visualization.HeatmapLayer({
-      data: getPoints(),
-      map: map,
-    });
-    setGradient()
-    setRadius(50)
-    setOpacity(0.8)
-    adjustMap("tilt", 67.5);
-  } else {
-    alert("This is a warning message!");
-  }
+  const db = getFirestore();
+  querySnapshot = await getDocs(collection(db, "fbi"));
+  heatmap = new google.maps.visualization.HeatmapLayer({
+    data: getPoints(),
+    map: map,
+  });
+  setGradient();
+  setRadius(50);
+  setOpacity(0.8);
+  adjustMap("tilt", 67.5);
   createdHeatmap = true;
+  gotData = true;
 }
 
 async function addMarkers() {
-  const db = getFirestore();
-  querySnapshot = await getDocs(collection(db, "fbi"));
+  if (gotData === true) {
+    querySnapshot.forEach((doc) => {
+      const contentString =
+        '<div id="content">' +
+        '<div id="siteNotice">' +
+        "</div>" +
+        '<h1 id="firstHeading" class="firstHeading">' +
+        capitalizeFirstLetter(doc.data().offense) +
+        "</h1>" +
+        '<div id="bodyContent">' +
+        "<p><b>Date Year: </b>" +
+        doc.data().data_year +
+        "</p>" +
+        "</div>" +
+        "</div>";
 
-  querySnapshot.forEach((doc) => {
-    const contentString =
-      '<div id="content">' +
-      '<div id="siteNotice">' +
-      "</div>" +
-      '<h1 id="firstHeading" class="firstHeading">' +
-      capitalizeFirstLetter(doc.data().offense) +
-      "</h1>" +
-      '<div id="bodyContent">' +
-      "<p><b>Date Year: </b>" +
-      doc.data().data_year +
-      "</p>" +
-      "</div>" +
-      "</div>";
-
-    const infoWindow = new google.maps.InfoWindow({
-      content: contentString,
-    });
-
-    infoWindow.addListener("closeclick", () => {
-      adjustMap("tilt", 67.5);
-    });
-
-    const marker = new google.maps.Marker({
-      position: { lat: doc.data().latitude, lng: doc.data().longitude },
-      map,
-      title: capitalizeFirstLetter(doc.data().offense),
-    });
-
-    marker.addListener("click", () => {
-      infoWindow.open({
-        anchor: marker,
-        map,
-        shouldFocus: false,
+      const infoWindow = new google.maps.InfoWindow({
+        content: contentString,
       });
-    });
 
-    markers.push(marker);
-  });
-  gotData = true;
+      infoWindow.addListener("closeclick", () => {
+        adjustMap("tilt", 67.5);
+      });
+
+      const marker = new google.maps.Marker({
+        position: { lat: doc.data().latitude, lng: doc.data().longitude },
+        map,
+        title: capitalizeFirstLetter(doc.data().offense),
+      });
+
+      marker.addListener("click", () => {
+        infoWindow.open({
+          anchor: marker,
+          map,
+          shouldFocus: false,
+        });
+      });
+
+      markers.push(marker);
+    });
+  } else {
+    alert("Create Heatmap First!");
+    document.getElementById('toggle-markers').checked = false;
+  }
 }
 // ---> End of Heatmap and Markers Functions
 
@@ -499,7 +503,7 @@ locationIcon.onclick = function () {
 searchIcon.onclick = function () {
   if (!searchBox.classList.contains("active")) {
     searchBox.classList.toggle("active");
-    searchContainer.classList.toggle("grey")
+    searchContainer.classList.toggle("grey");
   }
 };
 
@@ -507,3 +511,30 @@ hamburgerIcon.onclick = function () {
   dashContainer.classList.toggle("active");
   searchContainer.classList.toggle("adjust");
 };
+
+async function onReportSubmit() {
+  var crimeCategory = document.getElementById("crimeCategory").value;
+  var address = document.getElementById("address").value;
+  var city = document.getElementById("city").value;
+  var state = document.getElementById("state").value;
+  var zipCode = document.getElementById("zipcode").value;
+  var name = document.getElementById("name").value;
+  var phone = document.getElementById("phone").value;
+
+  try {
+    const docRef = await addDoc(collection(db, "fbi"), {
+      latitude: 0,
+      longitude: 0,
+      data_year: 2019,
+      offense: crimeCategory,
+      name: name,
+      phone: phone,
+      zip_code: zipCode,
+      city: city,
+      state: state,
+    });
+    console.log("Document written with ID: ", docRef.id);
+  } catch (e) {
+    console.error("Error adding document: ", e);
+  }
+}
