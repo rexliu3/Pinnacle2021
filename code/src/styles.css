@@ -115,6 +115,7 @@ body {
   border-style: solid;
   padding-bottom: 8px;
   height: fit-content;  
+  color: white;
 }
 
 .locate::placeholder {
@@ -168,7 +169,7 @@ body {
   left: 0;
   top: 0;
   width: 90px;
-  height: 100vh;
+  height: 95.5%;
   box-shadow: 0 0 5px 0 rgba(0, 0, 0, .2); 
   /*background-color: rgba(255, 255, 255, .15);
   backdrop-filter: blur(5px);*/
@@ -442,6 +443,8 @@ input:checked + .slider:before {
   border-radius: 30px;
   opacity: 0;
   overflow-y: auto;
+  background: rgba(176,202,199,1);
+  color: white;
 }
 
 .active #directionsPanel {
@@ -449,6 +452,8 @@ input:checked + .slider:before {
   background:#f0f3ff;
   box-shadow: 6px 6px 10px -1px rgba(0, 0, 0, 0.15),
   -6px -6px 10px -1px rgba(255, 255, 255, 0.7);
+  background: rgba(176,202,199,1);
+  color: white;
 }
 
 a {
