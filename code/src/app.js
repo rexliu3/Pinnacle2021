@@ -580,24 +580,29 @@ async function getRoute(start, end) {
 
   let startCoord = await getCoordinatesFromName(start);
   let endCoord = await getCoordinatesFromName(end);
+  let avoidAreaString = await getAvoidAreaString(start, end);
 
   path = `https://route.ls.hereapi.com/routing/7.2/calculateroute.json?apiKey=${HERE_API_KEY}&waypoint0=geo!${
     startCoord.lat
   },${startCoord.lng}&waypoint1=geo!${endCoord.lat},${
     endCoord.lng
-  }&mode=fastest;pedestrian;traffic:disabled&avoidareas=${getAvoidAreaString(
-    start,
-    end
-  )}`;
+  }&mode=fastest;pedestrian;traffic:disabled&avoidareas=${avoidAreaString}`;
 
   return axios
     .get(path)
     .then((res) => res.data.response.route[0].waypoint)
     .then((waypoints) => {
       let res = [];
-      for (wp of waypoints) {
-        res.push(wp.originalPosition);
+      for (let w of waypoints) {
+        res.push({
+          location: w.originalPosition,
+          stopover: false
+        });
       }
+      console.log("WHY ISNT THIS WORKING");
+      console.log(waypoints);
+      console.log("WHY ISNT THIS WORKING v2");
+      console.log(res);
       return res;
     });
 }
@@ -614,21 +619,30 @@ async function getAvoidAreaString(start, end) {
   };
 
   let res = "";
+  let pts = [];
 
   const db = getFirestore();
   querySnapshot = await getDocs(collection(db, "fbi"));
   querySnapshot
     .forEach((doc) => {
-      res += getBoxAroundAvoidCoord({
-        lat: doc.data().latitude,
-        lng: doc.data().longitude,
-      });
-    })
-    .then(() => {
-      // remove last exclamation for formatting
-      if (str[str.length - 1] == "!") res = res.substring(0, res.length - 1);
-      return res;
+      pts.push({
+      lat: doc.data().latitude, lng: doc.data().longitude
     });
+      // res += getBoxAroundAvoidCoord({
+      //   lat: doc.data().latitude,
+      //   lng: doc.data().longitude,
+      // });
+    })
+  // remove last exclamation for formatting
+  while (pts.length > 15) pts.pop();
+  console.log(pts);
+  for (let pt of pts) {
+    res += getBoxAroundAvoidCoord(pt);
+  }
+
+  if (res[res.length - 1] == "!") 
+    res = res.substring(0, res.length - 1);
+  return res;
 }
 
 /* [
