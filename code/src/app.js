@@ -20,18 +20,8 @@ import { GLTFLoader } from "three/examples/jsm/loaders/GLTFLoader.js";
 import { initializeApp } from "firebase/app";
 import { getFirestore, collection, getDocs, addDoc } from "firebase/firestore";
 
-/*const firebaseApp = initializeApp({
-  apiKey: "AIzaSyCUvjvEYUfKivJPJ8xS6inRXlHW4pW0HfA",
-  authDomain: "pinnacle2021v2.firebaseapp.com",
-  projectId: "pinnacle2021v2",
-  storageBucket: "pinnacle2021v2.appspot.com",
-  messagingSenderId: "347442946979",
-  appId: "1:347442946979:web:a12be8ec3003ec7cb9f016",
-  measurementId: "G-9FL3CCBLF5",
-});*/
-
 const firebaseApp = initializeApp({
-  apiKey: "AIzaSyDtxnvVm5xzuZnK8Xco7HliIEEbJ7AH78k",
+  apiKey: "##",
   authDomain: "pinnacle2021v7.firebaseapp.com",
   projectId: "pinnacle2021v7",
   storageBucket: "pinnacle2021v7.appspot.com",
@@ -42,7 +32,7 @@ const firebaseApp = initializeApp({
 
 
 const apiOptions = {
-  apiKey: "AIzaSyA3ACCckrmeyEyl2ZUw72B3dU3UGlCuQCE",
+  apiKey: "##",
   version: "beta",
   map_ids: ["56e39613eced90d4"],
   libraries: ["visualization", "places"],
